@@ -426,7 +426,7 @@ export default function HomeScreen() {
 
             <View style={styles.welcomeRight}>
               <Image
-                source={require("@/assets/images/mascot.png")}
+                source={require("@/assets/images/whale-heart.png")}
                 style={styles.mascotImage}
                 resizeMode="contain"
               />

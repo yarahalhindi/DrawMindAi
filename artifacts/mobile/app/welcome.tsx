@@ -83,7 +83,7 @@ export default function WelcomeScreen() {
           ]}
         >
           <Image
-            source={require("../assets/images/mascot.png")}
+            source={require("../assets/images/whale-paintbrush.png")}
             style={styles.mascot}
             contentFit="contain"
           />

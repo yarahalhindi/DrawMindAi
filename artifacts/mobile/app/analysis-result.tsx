@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
+  Image,
   Platform,
   ScrollView,
   StyleSheet,
@@ -131,7 +132,11 @@ export default function AnalysisResultScreen() {
               colors={["#EDE9FF", "#DDD6FF"]}
               style={styles.thumbInner}
             >
-              <Ionicons name="brush" size={40} color="#6C4DFF" />
+              <Image
+                source={require("@/assets/images/whale-magnifier.png")}
+                style={styles.whaleThumb}
+                resizeMode="contain"
+              />
             </LinearGradient>
           </View>
           <View style={styles.previewInfo}>
@@ -344,6 +349,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
+  },
+  whaleThumb: {
+    width: 72,
+    height: 72,
   },
   previewInfo: { gap: 4 },
   previewChildName: {
