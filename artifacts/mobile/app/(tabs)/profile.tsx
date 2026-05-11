@@ -41,19 +41,25 @@ export default function ProfileScreen() {
     router.push(route as any);
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sign Out",
-        style: "destructive",
-        onPress: async () => {
-          await logout();
-          router.replace("/login");
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Sign Out",
+          style: "destructive",
+          onPress: async () => {
+            await logout();
+            router.dismissAll();
+            router.replace("/login");
+          },
         },
-      },
-    ]);
+      ],
+      { cancelable: true }
+    );
   }
 
   return (

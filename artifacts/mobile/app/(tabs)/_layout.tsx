@@ -1,9 +1,10 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import React from "react";
-import { Platform, StyleSheet, View, useColorScheme } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useApp } from "@/context/AppContext";
 
 function TabIcon({
   ionName,
@@ -25,6 +26,11 @@ function TabIcon({
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === "web";
+  const { isLoggedIn } = useApp();
+
+  if (!isLoggedIn) {
+    return <Redirect href="/login" />;
+  }
 
   const tabBarHeight = isWeb ? 84 : 62 + insets.bottom;
 
@@ -66,12 +72,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => (
-            <TabIcon
-              ionName="home"
-              sfName="house.fill"
-              color={color}
-              size={size}
-            />
+            <TabIcon ionName="home" sfName="house.fill" color={color} size={size} />
           ),
         }}
       />
@@ -80,12 +81,7 @@ export default function TabLayout() {
         options={{
           title: "Drawings",
           tabBarIcon: ({ color, size }) => (
-            <TabIcon
-              ionName="images"
-              sfName="photo.stack.fill"
-              color={color}
-              size={size}
-            />
+            <TabIcon ionName="images" sfName="photo.stack.fill" color={color} size={size} />
           ),
         }}
       />
@@ -94,12 +90,7 @@ export default function TabLayout() {
         options={{
           title: "Chat",
           tabBarIcon: ({ color, size }) => (
-            <TabIcon
-              ionName="chatbubbles"
-              sfName="bubble.left.and.bubble.right.fill"
-              color={color}
-              size={size}
-            />
+            <TabIcon ionName="chatbubbles" sfName="bubble.left.and.bubble.right.fill" color={color} size={size} />
           ),
         }}
       />
@@ -108,12 +99,7 @@ export default function TabLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <TabIcon
-              ionName="person"
-              sfName="person.fill"
-              color={color}
-              size={size}
-            />
+            <TabIcon ionName="person" sfName="person.fill" color={color} size={size} />
           ),
         }}
       />
