@@ -3,19 +3,19 @@ const colors = {
     text: "#4A3070",
     tint: "#A78BFA",
 
-    background: "#FDF8F5",
+    background: "#F5EFFE",
     foreground: "#4A3070",
 
-    card: "#FFF5F8",
+    card: "#FFFFFF",
     cardForeground: "#4A3070",
 
     primary: "#A78BFA",
     primaryForeground: "#FFFFFF",
 
-    secondary: "#F0E8FF",
+    secondary: "#EDE5FF",
     secondaryForeground: "#A78BFA",
 
-    muted: "#F5ECF8",
+    muted: "#EDE5FF",
     mutedForeground: "#A090B8",
 
     accent: "#F0A8C8",
@@ -24,11 +24,11 @@ const colors = {
     destructive: "#FF6B6B",
     destructiveForeground: "#FFFFFF",
 
-    border: "#EAD4F5",
-    input: "#FFF0F6",
+    border: "#D8C4F5",
+    input: "#FFFFFF",
 
     lavender: "#C4B0FF",
-    darkNav: "#F5EBF8",
+    darkNav: "#EDE5FF",
   },
   radius: 24,
 };

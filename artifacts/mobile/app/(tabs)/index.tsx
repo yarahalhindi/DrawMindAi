@@ -657,7 +657,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FDF8F5" },
+  container: { flex: 1, backgroundColor: "#F5EFFE" },
   scroll: { paddingHorizontal: 20 },
 
   /* ── Welcome Card ── */

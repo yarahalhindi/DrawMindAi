@@ -187,7 +187,7 @@ export default function DrawingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FDF8F5" },
+  container: { flex: 1, backgroundColor: "#F5EFFE" },
   scroll: { paddingHorizontal: 20 },
 
   pageTitle: {
@@ -213,12 +213,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
-    backgroundColor: "#FFF5F8",
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     padding: 16,
-    shadowColor: "#C4A8F5",
+    shadowColor: "#B89CFF",
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.10,
     shadowRadius: 16,
     elevation: 5,
   },
@@ -303,11 +303,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
-    backgroundColor: "#FFF5F8",
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     padding: 16,
     borderWidth: 2,
-    borderColor: "#EAD4F5",
+    borderColor: "#D8C4F5",
     borderStyle: "dashed",
   },
   addCircle: {

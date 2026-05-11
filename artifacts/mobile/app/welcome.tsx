@@ -58,7 +58,7 @@ export default function WelcomeScreen() {
 
   return (
     <LinearGradient
-      colors={["#C4A8F5", "#D8B4F0", "#F5C0DC"]}
+      colors={["#DDD0FF", "#E8C8F8", "#F5D0E8"]}
       start={{ x: 0.1, y: 0 }}
       end={{ x: 0.9, y: 1 }}
       style={[styles.container, { paddingTop: topPad, paddingBottom: botPad }]}

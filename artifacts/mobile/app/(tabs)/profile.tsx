@@ -141,7 +141,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FDF8F5" },
+  container: { flex: 1, backgroundColor: "#F5EFFE" },
   headerBg: { paddingHorizontal: 20, paddingBottom: 60, alignItems: "center" },
   avatarLarge: { width: 88, height: 88, borderRadius: 44, backgroundColor: "rgba(255,255,255,0.25)", alignItems: "center", justifyContent: "center", borderWidth: 3, borderColor: "rgba(255,255,255,0.5)", marginBottom: 12 },
   avatarLargeText: { fontSize: 36, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
@@ -168,6 +168,6 @@ const styles = StyleSheet.create({
   settingIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   settingLabel: { flex: 1, fontSize: 15, color: "#4A3070", fontFamily: "Inter_500Medium", fontWeight: "500" },
 
-  logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 20, paddingVertical: 16, borderWidth: 1, borderColor: "#FFD6D6", shadowColor: "#FF6B6B", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 3 },
+  logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 20, paddingVertical: 16, shadowColor: "#B89CFF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 3 },
   logoutText: { fontSize: 15, fontWeight: "700", color: "#FF6B6B", fontFamily: "Inter_700Bold" },
 });

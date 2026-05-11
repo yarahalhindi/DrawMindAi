@@ -17,14 +17,13 @@ export function GlassCard({ children, style, padding = 20 }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "rgba(255,248,252,0.95)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "rgba(234,212,245,0.7)",
-    shadowColor: "#C4A8F5",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 24,
-    elevation: 6,
+    borderWidth: 0,
+    shadowColor: "#B89CFF",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.10,
+    shadowRadius: 20,
+    elevation: 5,
   },
 });

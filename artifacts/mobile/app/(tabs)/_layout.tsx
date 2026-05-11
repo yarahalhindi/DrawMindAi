@@ -36,9 +36,9 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "rgba(160,128,220,0.45)",
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: "#F5EBF8",
+          backgroundColor: "#EDE5FF",
           borderTopWidth: 1,
-          borderTopColor: "#EAD4F5",
+          borderTopColor: "#D8C4F5",
           height: tabBarHeight,
           paddingBottom: isWeb ? 0 : insets.bottom,
           shadowColor: "#C4A8F5",
@@ -48,7 +48,7 @@ export default function TabLayout() {
           elevation: 16,
         },
         tabBarBackground: () => (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: "#F5EBF8" }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: "#EDE5FF" }]} />
         ),
         tabBarLabelStyle: {
           fontSize: 11,
