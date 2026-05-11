@@ -65,7 +65,7 @@ export default function TermsOfUseScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={22} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Terms of Use</Text>
         <View style={{ width: 40 }} />
@@ -76,7 +76,7 @@ export default function TermsOfUseScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <LinearGradient colors={["#4A3880", "#8B7BAB"]} style={styles.header}>
+        <LinearGradient colors={["#C4A8F5", "#D4B0F0"]} style={styles.header}>
           <View style={styles.headerIcon}>
             <Ionicons name="document-text" size={28} color="#fff" />
           </View>
@@ -101,10 +101,10 @@ export default function TermsOfUseScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  navTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingTop: 4 },
 
   header: { borderRadius: 24, padding: 24, alignItems: "center", gap: 8, marginBottom: 20 },
@@ -115,6 +115,6 @@ const styles = StyleSheet.create({
   intro: { fontSize: 14, color: "#4A3880", fontFamily: "Inter_400Regular", lineHeight: 22, marginBottom: 20, backgroundColor: "#fff", borderRadius: 18, padding: 16 },
 
   section: { marginBottom: 16, backgroundColor: "#fff", borderRadius: 18, padding: 18 },
-  sectionTitle: { fontSize: 15, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold", marginBottom: 10 },
+  sectionTitle: { fontSize: 15, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold", marginBottom: 10 },
   sectionBody: { fontSize: 13, color: "#5A4A7A", fontFamily: "Inter_400Regular", lineHeight: 22 },
 });

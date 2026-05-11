@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const FEATURES = [
-  { icon: "brush-outline",      color: "#6C4DFF", title: "Drawing Analysis",    desc: "AI-powered emotional pattern recognition from children's drawings." },
+  { icon: "brush-outline",      color: "#A78BFA", title: "Drawing Analysis",    desc: "AI-powered emotional pattern recognition from children's drawings." },
   { icon: "heart-outline",      color: "#FF6B9D", title: "Emotional Wellness",  desc: "Track and understand your child's emotional development over time." },
   { icon: "people-outline",     color: "#48CAE4", title: "Multi-Child Support", desc: "Manage profiles for all your children in one place." },
   { icon: "chatbubble-outline", color: "#90BE6D", title: "AI Assistant",        desc: "Chat with our AI psychology assistant for insights and guidance." },
@@ -30,7 +30,7 @@ export default function AboutAppScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={22} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>About App</Text>
         <View style={{ width: 40 }} />
@@ -42,7 +42,7 @@ export default function AboutAppScreen() {
       >
         {/* Hero gradient card */}
         <LinearGradient
-          colors={["#2D1B8E", "#6C4DFF", "#9B7FFF"]}
+          colors={["#C4A8F5", "#D4B0F0", "#F0A8C8"]}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={styles.heroCard}
         >
@@ -112,7 +112,7 @@ export default function AboutAppScreen() {
 
         {/* Disclaimer */}
         <View style={styles.disclaimer}>
-          <Ionicons name="information-circle-outline" size={16} color="#B89CFF" />
+          <Ionicons name="information-circle-outline" size={16} color="#C4B0FF" />
           <Text style={styles.disclaimerText}>
             Draw Mind AI is designed as a supplementary wellness tool and does not replace professional psychological or medical advice. Always consult a qualified professional for clinical concerns.
           </Text>
@@ -123,13 +123,13 @@ export default function AboutAppScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  navTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingTop: 4 },
 
-  heroCard: { borderRadius: 28, padding: 28, alignItems: "center", gap: 10, marginBottom: 24, shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.35, shadowRadius: 24, elevation: 12 },
+  heroCard: { borderRadius: 28, padding: 28, alignItems: "center", gap: 10, marginBottom: 24, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.35, shadowRadius: 24, elevation: 12 },
   mascotCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", marginBottom: 4 },
   mascot: { width: 60, height: 60 },
   appName: { fontSize: 26, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold", letterSpacing: -0.5 },
@@ -138,23 +138,23 @@ const styles = StyleSheet.create({
   versionText: { fontSize: 12, color: "#fff", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
 
   section: { marginBottom: 20 },
-  sectionTitle: { fontSize: 16, fontWeight: "800", color: "#1A0F2E", fontFamily: "Inter_700Bold", marginBottom: 12, letterSpacing: -0.2 },
+  sectionTitle: { fontSize: 16, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", marginBottom: 12, letterSpacing: -0.2 },
 
-  missionCard: { backgroundColor: "#fff", borderRadius: 20, padding: 18, gap: 12, shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 },
+  missionCard: { backgroundColor: "#fff", borderRadius: 20, padding: 18, gap: 12, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 },
   missionText: { fontSize: 14, color: "#4A3880", fontFamily: "Inter_400Regular", lineHeight: 22 },
 
   featuresList: { gap: 12 },
-  featureRow: { flexDirection: "row", alignItems: "flex-start", gap: 14, backgroundColor: "#fff", borderRadius: 18, padding: 14, shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+  featureRow: { flexDirection: "row", alignItems: "flex-start", gap: 14, backgroundColor: "#fff", borderRadius: 18, padding: 14, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
   featureIcon: { width: 42, height: 42, borderRadius: 13, alignItems: "center", justifyContent: "center", flexShrink: 0 },
   featureTexts: { flex: 1, gap: 3 },
-  featureTitle: { fontSize: 14, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
-  featureDesc: { fontSize: 12, color: "#8B7BAB", fontFamily: "Inter_400Regular", lineHeight: 18 },
+  featureTitle: { fontSize: 14, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
+  featureDesc: { fontSize: 12, color: "#A090B8", fontFamily: "Inter_400Regular", lineHeight: 18 },
 
-  infoCard: { backgroundColor: "#fff", borderRadius: 20, overflow: "hidden", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 },
+  infoCard: { backgroundColor: "#fff", borderRadius: 20, overflow: "hidden", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 },
   infoRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 18, paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: "#F0EEFF" },
-  infoLabel: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_400Regular" },
-  infoValue: { fontSize: 13, fontWeight: "600", color: "#1A0F2E", fontFamily: "Inter_600SemiBold" },
+  infoLabel: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular" },
+  infoValue: { fontSize: 13, fontWeight: "600", color: "#4A3070", fontFamily: "Inter_600SemiBold" },
 
-  disclaimer: { flexDirection: "row", gap: 10, backgroundColor: "#EDE9FF", borderRadius: 16, padding: 14, alignItems: "flex-start" },
+  disclaimer: { flexDirection: "row", gap: 10, backgroundColor: "#F0E8FF", borderRadius: 16, padding: 14, alignItems: "flex-start" },
   disclaimerText: { flex: 1, fontSize: 12, color: "#7A6A9A", fontFamily: "Inter_400Regular", lineHeight: 18 },
 });

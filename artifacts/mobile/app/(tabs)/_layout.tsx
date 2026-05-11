@@ -32,22 +32,23 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#B89CFF",
-        tabBarInactiveTintColor: "rgba(184,156,255,0.45)",
+        tabBarActiveTintColor: "#A78BFA",
+        tabBarInactiveTintColor: "rgba(160,128,220,0.45)",
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: "#24124D",
-          borderTopWidth: 0,
+          backgroundColor: "#F5EBF8",
+          borderTopWidth: 1,
+          borderTopColor: "#EAD4F5",
           height: tabBarHeight,
           paddingBottom: isWeb ? 0 : insets.bottom,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -8 },
-          shadowOpacity: 0.3,
-          shadowRadius: 20,
-          elevation: 20,
+          shadowColor: "#C4A8F5",
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.12,
+          shadowRadius: 16,
+          elevation: 16,
         },
         tabBarBackground: () => (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: "#24124D" }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: "#F5EBF8" }]} />
         ),
         tabBarLabelStyle: {
           fontSize: 11,

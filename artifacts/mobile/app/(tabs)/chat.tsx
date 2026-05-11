@@ -40,7 +40,7 @@ const DOCTORS = [
     years: 12,
     patients: 340,
     tags: ["Anxiety", "Emotions", "Drawing Analysis"],
-    color: "#6C4DFF",
+    color: "#A78BFA",
   },
   {
     id: "d2",
@@ -128,7 +128,7 @@ export default function ChatScreen() {
           >
             {activeTab === "ai" ? (
               <LinearGradient
-                colors={["#6C4DFF", "#9B7FFF"]}
+                colors={["#C4A8F5", "#F0A8C8"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.toggleGradient}
@@ -147,7 +147,7 @@ export default function ChatScreen() {
           >
             {activeTab === "doctors" ? (
               <LinearGradient
-                colors={["#6C4DFF", "#9B7FFF"]}
+                colors={["#C4A8F5", "#F0A8C8"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.toggleGradient}
@@ -172,7 +172,7 @@ export default function ChatScreen() {
           {/* AI Card */}
           <GlassCard style={styles.aiCard} padding={16}>
             <LinearGradient
-              colors={["#6C4DFF", "#9B7FFF"]}
+              colors={["#C4A8F5", "#F0A8C8"]}
               style={styles.aiAvatarCircle}
             >
               <Ionicons name="brain" size={22} color="#fff" />
@@ -230,7 +230,7 @@ export default function ChatScreen() {
               >
                 {item.role === "ai" && (
                   <LinearGradient
-                    colors={["#6C4DFF", "#9B7FFF"]}
+                    colors={["#C4A8F5", "#F0A8C8"]}
                     style={styles.msgAiIcon}
                   >
                     <Ionicons name="brain" size={14} color="#fff" />
@@ -269,7 +269,7 @@ export default function ChatScreen() {
             <TextInput
               style={styles.chatInput}
               placeholder="Type your message…"
-              placeholderTextColor="#8B7BAB"
+              placeholderTextColor="#A090B8"
               value={input}
               onChangeText={setInput}
               onSubmitEditing={sendMessage}
@@ -277,7 +277,7 @@ export default function ChatScreen() {
             />
             <TouchableOpacity onPress={sendMessage}>
               <LinearGradient
-                colors={["#6C4DFF", "#9B7FFF"]}
+                colors={["#C4A8F5", "#F0A8C8"]}
                 style={styles.sendBtn}
               >
                 <Ionicons name="send" size={18} color="#fff" />
@@ -313,11 +313,11 @@ export default function ChatScreen() {
                   <Text style={styles.docStatText}>{doc.rating}</Text>
                 </View>
                 <View style={styles.docStat}>
-                  <Ionicons name="briefcase-outline" size={14} color="#8B7BAB" />
+                  <Ionicons name="briefcase-outline" size={14} color="#A090B8" />
                   <Text style={styles.docStatText}>{doc.years}y exp</Text>
                 </View>
                 <View style={styles.docStat}>
-                  <Ionicons name="people-outline" size={14} color="#8B7BAB" />
+                  <Ionicons name="people-outline" size={14} color="#A090B8" />
                   <Text style={styles.docStatText}>{doc.patients}+</Text>
                 </View>
               </View>
@@ -342,24 +342,24 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FDF8F5",
   },
   flex: { flex: 1 },
   header: {
     paddingHorizontal: 20,
     paddingBottom: 8,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FDF8F5",
   },
   pageTitle: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     marginBottom: 14,
   },
   toggleWrap: {
     flexDirection: "row",
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     borderRadius: 30,
     padding: 4,
     marginBottom: 8,
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 26,
     alignItems: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   toggleTextInactive: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_600SemiBold",
   },
   aiCard: {
@@ -429,12 +429,12 @@ const styles = StyleSheet.create({
   aiName: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   aiSub: {
     fontSize: 12,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
     marginTop: 2,
   },
@@ -450,11 +450,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   chipText: {
     fontSize: 13,
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },
@@ -489,11 +489,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   bubbleUser: {
-    backgroundColor: "#6C4DFF",
+    backgroundColor: "#A78BFA",
     borderBottomRightRadius: 6,
   },
   bubbleAi: {
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     borderBottomLeftRadius: 6,
   },
   bubbleText: {
@@ -505,10 +505,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   bubbleTextAi: {
-    color: "#1A0F2E",
+    color: "#4A3070",
   },
   typingBubble: {
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
   },
   typingText: {
     fontSize: 13,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
     fontStyle: "italic",
   },
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 20,
     paddingTop: 10,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FDF8F5",
   },
   chatInput: {
     flex: 1,
@@ -536,9 +536,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 12,
     fontSize: 15,
-    color: "#1A0F2E",
+    color: "#4A3070",
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
     fontFamily: "Inter_400Regular",
   },
   sendBtn: {
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     borderRadius: 23,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 10,
@@ -577,18 +577,18 @@ const styles = StyleSheet.create({
   docName: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   docSpec: {
     fontSize: 13,
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },
   docClinic: {
     fontSize: 12,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
   },
   docStats: {
@@ -612,21 +612,21 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tag: {
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   tagText: {
     fontSize: 12,
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },
   msgDocBtn: {
-    backgroundColor: "#6C4DFF",
+    backgroundColor: "#A78BFA",
     borderRadius: 14,
     paddingVertical: 12,
     alignItems: "center",

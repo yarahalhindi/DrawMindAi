@@ -113,7 +113,7 @@ export default function ChooseChildScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={24} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>{title}</Text>
         <View style={{ width: 40 }} />
@@ -122,7 +122,7 @@ export default function ChooseChildScreen() {
       {/* Header */}
       <View style={styles.header}>
         <LinearGradient
-          colors={isUpload ? ["#5535E8", "#6C4DFF"] : isEdit ? ["#6C4DFF", "#B89CFF"] : ["#C084FC", "#7C3AED"]}
+          colors={isUpload ? ["#C4A8F5", "#D4B0F0"] : isEdit ? ["#D4B0F0", "#F0A8C8"] : ["#F0A8C8", "#C4A8F5"]}
           style={styles.headerIcon}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -149,13 +149,13 @@ export default function ChooseChildScreen() {
           ))
         ) : (
           <View style={styles.emptyState}>
-            <LinearGradient colors={["#EDE9FF", "#F5F1FF"]} style={styles.emptyIcon}>
-              <Ionicons name="people-outline" size={38} color="#B89CFF" />
+            <LinearGradient colors={["#F0E8FF", "#FDF8F5"]} style={styles.emptyIcon}>
+              <Ionicons name="people-outline" size={38} color="#C4B0FF" />
             </LinearGradient>
             <Text style={styles.emptyTitle}>No Children Added</Text>
             <Text style={styles.emptyText}>Add a child from the Home screen first.</Text>
             <TouchableOpacity onPress={() => router.push("/add-child")} activeOpacity={0.85}>
-              <LinearGradient colors={["#6C4DFF", "#9B7FFF"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.emptyBtn}>
+              <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.emptyBtn}>
                 <Ionicons name="add" size={16} color="#fff" />
                 <Text style={styles.emptyBtnText}>Add Child</Text>
               </LinearGradient>
@@ -175,10 +175,10 @@ export default function ChooseChildScreen() {
           >
             <LinearGradient
               colors={selected
-                ? isUpload ? ["#5535E8", "#6C4DFF", "#9B7FFF"]
-                  : isEdit ? ["#6C4DFF", "#9B7FFF", "#B89CFF"]
-                  : ["#C084FC", "#A855F7", "#7C3AED"]
-                : ["#C0B0D8", "#D0C0E8"]}
+                ? isUpload ? ["#C4A8F5", "#D4B0F0", "#F0A8C8"]
+                  : isEdit ? ["#D4B0F0", "#C4A8F5", "#F0A8C8"]
+                  : ["#F0A8C8", "#E0A8F0", "#C4A8F5"]
+                : ["#D8CCE8", "#E8D8F0"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.continueBtn}
@@ -195,15 +195,15 @@ export default function ChooseChildScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
-  navTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
+  navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
 
   header: { alignItems: "center", paddingHorizontal: 24, paddingBottom: 20, gap: 10 },
-  headerIcon: { width: 64, height: 64, borderRadius: 22, alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
-  headerTitle: { fontSize: 22, fontWeight: "800", color: "#1A0F2E", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
-  headerSubtitle: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 19, maxWidth: 280 },
+  headerIcon: { width: 64, height: 64, borderRadius: 22, alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
+  headerTitle: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
+  headerSubtitle: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 19, maxWidth: 280 },
 
   scroll: { paddingHorizontal: 20, gap: 12, paddingTop: 4 },
 
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 24,
     padding: 16,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 14,
@@ -226,19 +226,19 @@ const styles = StyleSheet.create({
   avatarShine: { position: "absolute", width: 28, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.24)", top: -6, left: -6 },
   avatarInitials: { fontSize: 20, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold" },
   childInfo: { flex: 1, gap: 4 },
-  childName: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
-  childMeta: { fontSize: 12, color: "#8B7BAB", fontFamily: "Inter_400Regular" },
+  childName: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
+  childMeta: { fontSize: 12, color: "#A090B8", fontFamily: "Inter_400Regular" },
   checkCircle: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" },
-  emptyCheck: { width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: "#DDD6FF" },
+  emptyCheck: { width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: "#EAD4F5" },
 
   emptyState: { alignItems: "center", paddingTop: 40, gap: 14 },
   emptyIcon: { width: 80, height: 80, borderRadius: 40, alignItems: "center", justifyContent: "center" },
-  emptyTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
-  emptyText: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_400Regular", textAlign: "center" },
+  emptyTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
+  emptyText: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center" },
   emptyBtn: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 24, paddingVertical: 13, borderRadius: 20 },
   emptyBtnText: { fontSize: 14, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 
-  footer: { paddingHorizontal: 20, paddingTop: 12, backgroundColor: "#F5F1FF", borderTopWidth: 1, borderTopColor: "#EDE9FF" },
-  continueBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 10 },
+  footer: { paddingHorizontal: 20, paddingTop: 12, backgroundColor: "#FDF8F5", borderTopWidth: 1, borderTopColor: "#F0E8FF" },
+  continueBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 10 },
   continueBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 });

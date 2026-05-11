@@ -29,7 +29,7 @@ export default function DrawingDetailScreen() {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={24} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.notFound}>Drawing not found</Text>
       </View>
@@ -51,7 +51,7 @@ export default function DrawingDetailScreen() {
         {/* Nav */}
         <View style={styles.navRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+            <Ionicons name="chevron-back" size={24} color="#4A3070" />
           </TouchableOpacity>
           <Text style={styles.navTitle}>Drawing Analysis</Text>
           <View style={{ width: 40 }} />
@@ -71,7 +71,7 @@ export default function DrawingDetailScreen() {
 
         {/* Main Emotion Badge */}
         <LinearGradient
-          colors={["#6C4DFF", "#9B7FFF"]}
+          colors={["#C4A8F5", "#F0A8C8"]}
           style={styles.emotionBadgeCard}
         >
           <Text style={styles.emotionBadgeLabel}>Detected Emotion</Text>
@@ -100,11 +100,11 @@ export default function DrawingDetailScreen() {
 
         {/* AI Summary */}
         <LinearGradient
-          colors={["#EDE9FF", "#F5F1FF"]}
+          colors={["#F0E8FF", "#FDF8F5"]}
           style={styles.summaryGrad}
         >
           <View style={styles.summaryHeader}>
-            <LinearGradient colors={["#6C4DFF", "#9B7FFF"]} style={styles.summaryIcon}>
+            <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} style={styles.summaryIcon}>
               <Ionicons name="brain" size={16} color="#fff" />
             </LinearGradient>
             <Text style={styles.summaryTitle}>AI Summary</Text>
@@ -118,7 +118,7 @@ export default function DrawingDetailScreen() {
           {behaviorInsights.map((ins) => (
             <View key={ins.label} style={styles.insightRow}>
               <View style={styles.insightIconWrap}>
-                <Ionicons name={ins.icon as any} size={18} color="#6C4DFF" />
+                <Ionicons name={ins.icon as any} size={18} color="#A78BFA" />
               </View>
               <View style={styles.insightContent}>
                 <Text style={styles.insightLabel}>{ins.label}</Text>
@@ -154,7 +154,7 @@ export default function DrawingDetailScreen() {
           <Text style={styles.sectionTitle}>Recommendations</Text>
           {drawing.recommendations.map((rec, idx) => (
             <View key={idx} style={styles.recRow}>
-              <LinearGradient colors={["#6C4DFF", "#9B7FFF"]} style={styles.recBullet}>
+              <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} style={styles.recBullet}>
                 <Ionicons name="checkmark" size={14} color="#fff" />
               </LinearGradient>
               <Text style={styles.recText}>{rec}</Text>
@@ -169,7 +169,7 @@ export default function DrawingDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FDF8F5",
   },
   scroll: {
     paddingHorizontal: 20,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 8,
@@ -197,12 +197,12 @@ const styles = StyleSheet.create({
   navTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   notFound: {
     fontSize: 16,
-    color: "#8B7BAB",
+    color: "#A090B8",
     textAlign: "center",
     marginTop: 40,
     fontFamily: "Inter_400Regular",
@@ -220,12 +220,12 @@ const styles = StyleSheet.create({
   drawingLabel: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   drawingDate: {
     fontSize: 13,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
   },
   emotionBadgeCard: {
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     gap: 6,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     marginBottom: 14,
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 12,
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   summaryHeader: {
     flexDirection: "row",
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   summaryText: {
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -319,13 +319,13 @@ const styles = StyleSheet.create({
   insightLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_600SemiBold",
     marginBottom: 2,
   },
   insightValue: {
     fontSize: 14,
-    color: "#1A0F2E",
+    color: "#4A3070",
     lineHeight: 20,
     fontFamily: "Inter_400Regular",
   },
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   recText: {
     flex: 1,
     fontSize: 14,
-    color: "#1A0F2E",
+    color: "#4A3070",
     lineHeight: 20,
     fontFamily: "Inter_400Regular",
   },

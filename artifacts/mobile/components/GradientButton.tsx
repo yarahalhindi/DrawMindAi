@@ -36,8 +36,8 @@ export function GradientButton({
 
   const gradientColors: [string, string] =
     variant === "primary"
-      ? ["#6C4DFF", "#9B7FFF"]
-      : ["#B89CFF", "#D4BEFF"];
+      ? ["#C4A8F5", "#F0A8C8"]
+      : ["#DDD0FF", "#F5C8E0"];
 
   return (
     <TouchableOpacity
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.45,
     shadowRadius: 20,

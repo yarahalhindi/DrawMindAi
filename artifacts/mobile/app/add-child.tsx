@@ -16,7 +16,7 @@ import { useApp } from "@/context/AppContext";
 import * as Haptics from "expo-haptics";
 
 const AVATAR_COLORS = [
-  { color: "#6C4DFF", label: "Purple" },
+  { color: "#A78BFA", label: "Purple" },
   { color: "#FF6B9D", label: "Pink" },
   { color: "#48CAE4", label: "Blue" },
   { color: "#F8961E", label: "Orange" },
@@ -68,7 +68,7 @@ export default function AddChildScreen() {
     >
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={24} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Add Child</Text>
         <View style={{ width: 40 }} />
@@ -113,13 +113,13 @@ export default function AddChildScreen() {
               <Ionicons
                 name="person-outline"
                 size={18}
-                color="#8B7BAB"
+                color="#A090B8"
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Enter child's name"
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
@@ -133,13 +133,13 @@ export default function AddChildScreen() {
               <Ionicons
                 name="calendar-outline"
                 size={18}
-                color="#8B7BAB"
+                color="#A090B8"
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Age in years"
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={age}
                 onChangeText={setAge}
                 keyboardType="number-pad"
@@ -178,13 +178,13 @@ export default function AddChildScreen() {
               <Ionicons
                 name="star-outline"
                 size={18}
-                color="#8B7BAB"
+                color="#A090B8"
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
                 placeholder="e.g. Drawing, Dancing, Reading"
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={activities}
                 onChangeText={setActivities}
               />
@@ -197,7 +197,7 @@ export default function AddChildScreen() {
               <TextInput
                 style={[styles.input, styles.textarea]}
                 placeholder="Any emotional observations..."
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={emotionalNotes}
                 onChangeText={setEmotionalNotes}
                 multiline
@@ -213,7 +213,7 @@ export default function AddChildScreen() {
               <TextInput
                 style={[styles.input, styles.textarea]}
                 placeholder="Your personal notes about your child..."
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={parentNotes}
                 onChangeText={setParentNotes}
                 multiline
@@ -247,7 +247,7 @@ export default function AddChildScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FDF8F5",
   },
   navBar: {
     flexDirection: "row",
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 8,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   navTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   scroll: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   avatarLabel: {
     fontSize: 14,
-    color: "#8B7BAB",
+    color: "#A090B8",
     marginBottom: 12,
     fontFamily: "Inter_500Medium",
   },
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   },
   colorDotSelected: {
     borderWidth: 3,
-    borderColor: "#1A0F2E",
+    borderColor: "#4A3070",
   },
   form: {
     gap: 4,
@@ -342,8 +342,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     height: 52,
     borderWidth: 1,
-    borderColor: "#DDD6FF",
-    shadowColor: "#6C4DFF",
+    borderColor: "#EAD4F5",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_400Regular",
   },
   textareaWrap: {
@@ -374,19 +374,19 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 44,
     borderRadius: 12,
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   genderBtnActive: {
-    backgroundColor: "#6C4DFF",
-    borderColor: "#6C4DFF",
+    backgroundColor: "#A78BFA",
+    borderColor: "#A78BFA",
   },
   genderText: {
     fontSize: 14,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },
@@ -402,15 +402,15 @@ const styles = StyleSheet.create({
     flex: 0.4,
     height: 54,
     borderRadius: 27,
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   cancelText: {
     fontSize: 15,
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },

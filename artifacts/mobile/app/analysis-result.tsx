@@ -52,7 +52,7 @@ const cs = StyleSheet.create({
     borderWidth: 3,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FDF8F5",
   },
   circleNum: {
     fontSize: 18,
@@ -61,7 +61,7 @@ const cs = StyleSheet.create({
   },
   circleLabel: {
     fontSize: 11,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_500Medium",
     textAlign: "center",
     maxWidth: 72,
@@ -85,7 +85,7 @@ export default function AnalysisResultScreen() {
           onPress={() => router.replace("/(tabs)")}
           style={styles.backBtn}
         >
-          <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={24} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.noDataText}>No analysis found</Text>
       </View>
@@ -119,7 +119,7 @@ export default function AnalysisResultScreen() {
             onPress={() => router.replace("/(tabs)")}
             style={styles.backBtn}
           >
-            <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+            <Ionicons name="chevron-back" size={24} color="#4A3070" />
           </TouchableOpacity>
           <Text style={styles.navTitle}>AI Analysis</Text>
           <View style={{ width: 40 }} />
@@ -129,7 +129,7 @@ export default function AnalysisResultScreen() {
         <GlassCard style={styles.drawingPreview} padding={24}>
           <View style={styles.thumbOuter}>
             <LinearGradient
-              colors={["#EDE9FF", "#DDD6FF"]}
+              colors={["#F0E8FF", "#EAD4F5"]}
               style={styles.thumbInner}
             >
               <Image
@@ -147,7 +147,7 @@ export default function AnalysisResultScreen() {
 
         {/* Main Emotion */}
         <LinearGradient
-          colors={["#6C4DFF", "#9B7FFF"]}
+          colors={["#C4A8F5", "#F0A8C8"]}
           style={styles.mainEmotionCard}
         >
           <Text style={styles.mainEmotionLabel}>Main Emotion</Text>
@@ -188,12 +188,12 @@ export default function AnalysisResultScreen() {
 
         {/* AI Summary */}
         <LinearGradient
-          colors={["#F5F1FF", "#EDE9FF"]}
+          colors={["#FDF8F5", "#F5ECF8"]}
           style={styles.summaryCard}
         >
           <View style={styles.summaryHeader}>
             <LinearGradient
-              colors={["#6C4DFF", "#9B7FFF"]}
+              colors={["#C4A8F5", "#F0A8C8"]}
               style={styles.summaryIcon}
             >
               <Ionicons name="brain" size={18} color="#fff" />
@@ -216,7 +216,7 @@ export default function AnalysisResultScreen() {
                       "information-circle-outline"
                     }
                     size={18}
-                    color="#6C4DFF"
+                    color="#A78BFA"
                   />
                 </View>
                 <View style={styles.insightContent}>
@@ -227,21 +227,21 @@ export default function AnalysisResultScreen() {
             ))}
             <View style={styles.insightItem}>
               <View style={styles.insightIconWrap}>
-                <Ionicons name="color-palette" size={18} color="#6C4DFF" />
+                <Ionicons name="color-palette" size={18} color="#A78BFA" />
               </View>
               <View style={styles.insightContent}>
                 <Text style={styles.insightLabel}>Creativity Level</Text>
                 <EmotionBar
                   label=""
                   percentage={latestDrawing.creativityLevel}
-                  color="#B89CFF"
+                  color="#C4B0FF"
                   delay={500}
                 />
               </View>
             </View>
             <View style={styles.insightItem}>
               <View style={styles.insightIconWrap}>
-                <Ionicons name="star" size={18} color="#6C4DFF" />
+                <Ionicons name="star" size={18} color="#A78BFA" />
               </View>
               <View style={styles.insightContent}>
                 <Text style={styles.insightLabel}>Confidence Level</Text>
@@ -263,7 +263,7 @@ export default function AnalysisResultScreen() {
             {latestDrawing.recommendations.map((rec, idx) => (
               <View key={idx} style={styles.recItem}>
                 <LinearGradient
-                  colors={["#6C4DFF", "#9B7FFF"]}
+                  colors={["#C4A8F5", "#F0A8C8"]}
                   style={styles.recNum}
                 >
                   <Text style={styles.recNumText}>{idx + 1}</Text>
@@ -277,7 +277,7 @@ export default function AnalysisResultScreen() {
         {/* Done Button */}
         <TouchableOpacity onPress={() => router.replace("/(tabs)")}>
           <LinearGradient
-            colors={["#6C4DFF", "#9B7FFF"]}
+            colors={["#C4A8F5", "#F0A8C8"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.doneBtn}
@@ -293,7 +293,7 @@ export default function AnalysisResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FDF8F5",
   },
   scroll: {
     paddingHorizontal: 20,
@@ -309,10 +309,10 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF5F8",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 8,
@@ -321,12 +321,12 @@ const styles = StyleSheet.create({
   navTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   noDataText: {
     fontSize: 16,
-    color: "#8B7BAB",
+    color: "#A090B8",
     textAlign: "center",
     marginTop: 40,
     fontFamily: "Inter_400Regular",
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   thumbOuter: {
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 12,
@@ -358,12 +358,12 @@ const styles = StyleSheet.create({
   previewChildName: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   previewDate: {
     fontSize: 13,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
   },
   mainEmotionCard: {
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
     gap: 6,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -379,18 +379,18 @@ const styles = StyleSheet.create({
   },
   mainEmotionLabel: {
     fontSize: 14,
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(74,48,112,0.7)",
     fontFamily: "Inter_500Medium",
   },
   mainEmotionValue: {
     fontSize: 36,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   mainEmotionConf: {
     fontSize: 14,
-    color: "rgba(255,255,255,0.75)",
+    color: "rgba(74,48,112,0.65)",
     fontFamily: "Inter_400Regular",
   },
   circlesCard: {},
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     marginBottom: 14,
   },
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 12,
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   summaryHeader: {
     flexDirection: "row",
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   summaryText: {
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -459,12 +459,12 @@ const styles = StyleSheet.create({
   insightLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_600SemiBold",
   },
   insightValue: {
     fontSize: 14,
-    color: "#1A0F2E",
+    color: "#4A3070",
     lineHeight: 20,
     fontFamily: "Inter_400Regular",
   },
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   recText: {
     flex: 1,
     fontSize: 14,
-    color: "#1A0F2E",
+    color: "#4A3070",
     lineHeight: 20,
     fontFamily: "Inter_400Regular",
   },
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingVertical: 16,
     alignItems: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 16,

@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "@/context/AppContext";
 
 const AVATAR_COLORS = [
-  { color: "#6C4DFF", label: "Purple" },
+  { color: "#A78BFA", label: "Purple" },
   { color: "#FF6B9D", label: "Pink" },
   { color: "#48CAE4", label: "Blue" },
   { color: "#F8961E", label: "Orange" },
@@ -49,7 +49,7 @@ export default function EditChildScreen() {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={24} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.notFound}>Child not found</Text>
       </View>
@@ -81,7 +81,7 @@ export default function EditChildScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={24} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Edit Profile</Text>
         <View style={{ width: 40 }} />
@@ -120,7 +120,7 @@ export default function EditChildScreen() {
             <TextInput
               style={styles.input}
               placeholder="Enter child's name"
-              placeholderTextColor="#8B7BAB"
+              placeholderTextColor="#A090B8"
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
@@ -131,7 +131,7 @@ export default function EditChildScreen() {
             <TextInput
               style={styles.input}
               placeholder="Age in years"
-              placeholderTextColor="#8B7BAB"
+              placeholderTextColor="#A090B8"
               value={age}
               onChangeText={setAge}
               keyboardType="number-pad"
@@ -157,7 +157,7 @@ export default function EditChildScreen() {
             <TextInput
               style={styles.input}
               placeholder="e.g. Drawing, Dancing, Reading"
-              placeholderTextColor="#8B7BAB"
+              placeholderTextColor="#A090B8"
               value={activities}
               onChangeText={setActivities}
             />
@@ -169,7 +169,7 @@ export default function EditChildScreen() {
               <TextInput
                 style={[styles.input, styles.textarea]}
                 placeholder="Any emotional observations..."
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={emotionalNotes}
                 onChangeText={setEmotionalNotes}
                 multiline
@@ -185,7 +185,7 @@ export default function EditChildScreen() {
               <TextInput
                 style={[styles.input, styles.textarea]}
                 placeholder="Your personal notes about your child..."
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={parentNotes}
                 onChangeText={setParentNotes}
                 multiline
@@ -207,7 +207,7 @@ export default function EditChildScreen() {
               style={{ flex: 0.6 }}
             >
               <LinearGradient
-                colors={name.trim() && age.trim() ? ["#6C4DFF", "#9B7FFF"] : ["#C0B0D8", "#D0C0E8"]}
+                colors={name.trim() && age.trim() ? ["#C4A8F5", "#F0A8C8"] : ["#D8CCE8", "#E8D8F0"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.saveBtn}
@@ -227,7 +227,7 @@ function Field({ label, icon, children }: { label: string; icon: string; childre
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputWrap}>
-        <Ionicons name={icon as any} size={18} color="#8B7BAB" style={styles.inputIcon} />
+        <Ionicons name={icon as any} size={18} color="#A090B8" style={styles.inputIcon} />
         {children}
       </View>
     </View>
@@ -235,36 +235,36 @@ function Field({ label, icon, children }: { label: string; icon: string; childre
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
-  notFound: { fontSize: 16, color: "#8B7BAB", textAlign: "center", marginTop: 40, fontFamily: "Inter_400Regular" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
+  notFound: { fontSize: 16, color: "#A090B8", textAlign: "center", marginTop: 40, fontFamily: "Inter_400Regular" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
-  navTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
+  navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingBottom: 32 },
   avatarWrap: { alignItems: "center", paddingVertical: 20 },
   avatarCircle: { width: 100, height: 100, borderRadius: 50, alignItems: "center", justifyContent: "center", marginBottom: 12, overflow: "hidden", shadowColor: "#000", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.18, shadowRadius: 14, elevation: 8 },
   avatarShine: { position: "absolute", width: 46, height: 46, borderRadius: 23, backgroundColor: "rgba(255,255,255,0.25)", top: -10, left: -10 },
   avatarInitials: { fontSize: 32, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
-  avatarLabel: { fontSize: 13, color: "#8B7BAB", marginBottom: 12, fontFamily: "Inter_500Medium" },
+  avatarLabel: { fontSize: 13, color: "#A090B8", marginBottom: 12, fontFamily: "Inter_500Medium" },
   colorRow: { flexDirection: "row", gap: 12 },
   colorDot: { width: 32, height: 32, borderRadius: 16 },
-  colorDotSelected: { borderWidth: 3, borderColor: "#1A0F2E" },
+  colorDotSelected: { borderWidth: 3, borderColor: "#4A3070" },
   form: { gap: 4 },
   fieldGroup: { marginBottom: 16 },
   label: { fontSize: 13, fontWeight: "600", color: "#4A3B7A", marginBottom: 8, fontFamily: "Inter_600SemiBold" },
-  inputWrap: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", borderRadius: 16, paddingHorizontal: 14, height: 52, borderWidth: 1, borderColor: "#DDD6FF", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  inputWrap: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", borderRadius: 16, paddingHorizontal: 14, height: 52, borderWidth: 1, borderColor: "#EAD4F5", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   inputIcon: { marginRight: 10 },
-  input: { flex: 1, fontSize: 15, color: "#1A0F2E", fontFamily: "Inter_400Regular" },
+  input: { flex: 1, fontSize: 15, color: "#4A3070", fontFamily: "Inter_400Regular" },
   textareaWrap: { height: "auto", alignItems: "flex-start", paddingVertical: 12 },
   textarea: { minHeight: 72 },
   genderRow: { flexDirection: "row", gap: 10 },
-  genderBtn: { flex: 1, height: 44, borderRadius: 12, backgroundColor: "#EDE9FF", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#DDD6FF" },
-  genderBtnActive: { backgroundColor: "#6C4DFF", borderColor: "#6C4DFF" },
-  genderText: { fontSize: 14, color: "#8B7BAB", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
+  genderBtn: { flex: 1, height: 44, borderRadius: 12, backgroundColor: "#F0E8FF", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#EAD4F5" },
+  genderBtnActive: { backgroundColor: "#A78BFA", borderColor: "#A78BFA" },
+  genderText: { fontSize: 14, color: "#A090B8", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
   genderTextActive: { color: "#FFFFFF" },
   btnRow: { flexDirection: "row", gap: 12, marginTop: 8 },
-  cancelBtn: { flex: 0.4, height: 54, borderRadius: 27, backgroundColor: "#EDE9FF", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#DDD6FF" },
-  cancelText: { fontSize: 15, color: "#6C4DFF", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
-  saveBtn: { height: 54, borderRadius: 27, alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 8 },
+  cancelBtn: { flex: 0.4, height: 54, borderRadius: 27, backgroundColor: "#F0E8FF", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#EAD4F5" },
+  cancelText: { fontSize: 15, color: "#A78BFA", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
+  saveBtn: { height: 54, borderRadius: 27, alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 8 },
   saveBtnText: { fontSize: 15, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 });

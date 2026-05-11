@@ -35,14 +35,14 @@ function pointsToSvgD(points: Point[]): string {
 
 // ── Color palette ─────────────────────────────────────────────────────────────
 const COLORS = [
-  "#1A0F2E", "#6C4DFF", "#FF6B6B", "#90BE6D",
-  "#F8961E", "#48CAE4", "#FF6B9D", "#9B7FFF", "#FFFFFF",
+  "#4A3070", "#A78BFA", "#FF6B6B", "#90BE6D",
+  "#F8961E", "#48CAE4", "#FF6B9D", "#C4B0FF", "#FFFFFF",
 ];
 
 // ── Mock AI analysis ──────────────────────────────────────────────────────────
 const EMOTIONS = ["Happy", "Sad", "Angry", "Anxiety", "Fear"] as const;
 const EMOTION_COLORS: Record<string, string> = {
-  Happy: "#90BE6D", Sad: "#577590", Angry: "#F3722C", Anxiety: "#F8961E", Fear: "#9B7FFF",
+  Happy: "#90BE6D", Sad: "#577590", Angry: "#F3722C", Anxiety: "#F8961E", Fear: "#C4B0FF",
 };
 
 function generateMockAnalysis(description: string, pathCount: number) {
@@ -100,7 +100,7 @@ function ToolBtn({ tool, active, onPress }: { tool: Tool; active: boolean; onPre
   const icon = tool === "pencil" ? "pencil" : tool === "brush" ? "brush" : "remove-circle-outline";
   return (
     <TouchableOpacity onPress={onPress} style={[styles.toolBtn, active && styles.toolBtnActive]}>
-      <Ionicons name={icon} size={20} color={active ? "#fff" : "#6C4DFF"} />
+      <Ionicons name={icon} size={20} color={active ? "#fff" : "#A78BFA"} />
       <Text style={[styles.toolLabel, active && styles.toolLabelActive]}>
         {tool.charAt(0).toUpperCase() + tool.slice(1)}
       </Text>
@@ -127,7 +127,7 @@ function AnalyzingOverlay({ visible, childName }: { visible: boolean; childName:
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={ov.backdrop}>
-        <LinearGradient colors={["#2D1B8E", "#6C4DFF"]} style={ov.card}>
+        <LinearGradient colors={["#C4A8F5", "#D4B0F0"]} style={ov.card}>
           {/* Pulsing brain icon */}
           <Animated.View style={[ov.iconWrap, { transform: [{ scale: pulse }] }]}>
             <Ionicons name="sparkles" size={40} color="#fff" />
@@ -170,7 +170,7 @@ function ProgressDot({ delay }: { delay: number }) {
 
 const ov = StyleSheet.create({
   backdrop:  { flex: 1, backgroundColor: "rgba(15,8,38,0.75)", alignItems: "center", justifyContent: "center", padding: 32 },
-  card:      { borderRadius: 32, paddingVertical: 44, paddingHorizontal: 36, alignItems: "center", gap: 16, width: "100%", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.6, shadowRadius: 40, elevation: 20 },
+  card:      { borderRadius: 32, paddingVertical: 44, paddingHorizontal: 36, alignItems: "center", gap: 16, width: "100%", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.6, shadowRadius: 40, elevation: 20 },
   iconWrap:  { width: 84, height: 84, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 4 },
   title:     { fontSize: 22, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
   sub:       { fontSize: 14, color: "rgba(255,255,255,0.75)", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 22 },
@@ -194,7 +194,7 @@ export default function DrawingCanvas() {
   const [currentPathPoints, setCurrentPath] = useState<Point[]>([]);
   const currentPointsRef                    = useRef<Point[]>([]);
   const [activeTool, setActiveTool]         = useState<Tool>("pencil");
-  const [selectedColor, setSelectedColor]   = useState("#1A0F2E");
+  const [selectedColor, setSelectedColor]   = useState("#4A3070");
 
   // Parent notes
   const [description, setDescription] = useState("");
@@ -294,7 +294,7 @@ export default function DrawingCanvas() {
       {/* ── Nav bar ── */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={22} color="#4A3070" />
         </TouchableOpacity>
 
         {child && (
@@ -311,7 +311,7 @@ export default function DrawingCanvas() {
 
         <View style={styles.actionBtns}>
           <TouchableOpacity onPress={handleUndo} style={styles.iconBtn} disabled={!hasPaths}>
-            <Ionicons name="arrow-undo" size={18} color={hasPaths ? "#6C4DFF" : "#C0B0D8"} />
+            <Ionicons name="arrow-undo" size={18} color={hasPaths ? "#A78BFA" : "#C0B0D8"} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleClear} style={styles.iconBtn} disabled={!hasPaths}>
             <Ionicons name="trash-outline" size={18} color={hasPaths ? "#FF6B6B" : "#C0B0D8"} />
@@ -381,7 +381,7 @@ export default function DrawingCanvas() {
       {/* ── Parent Notes ── */}
       <View style={styles.descSection}>
         <View style={styles.descLabelRow}>
-          <Ionicons name="create-outline" size={14} color="#8B7BAB" />
+          <Ionicons name="create-outline" size={14} color="#A090B8" />
           <Text style={styles.descLabel}>Parent Notes</Text>
         </View>
         <View style={[styles.descBox, descFocused && styles.descBoxFocused]}>
@@ -413,7 +413,7 @@ export default function DrawingCanvas() {
       >
         <TouchableOpacity onPress={handleAnalyze} disabled={!hasPaths} activeOpacity={0.88} style={{ width: "100%" }}>
           <LinearGradient
-            colors={hasPaths ? ["#4A30E0", "#6C4DFF", "#9B7FFF"] : ["#C0B0D8", "#D0C0E8"]}
+            colors={hasPaths ? ["#C4A8F5", "#D4B0F0", "#F0A8C8"] : ["#C0B0D8", "#D0C0E8"]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.analyzeBtn}
           >
@@ -432,48 +432,48 @@ export default function DrawingCanvas() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
 
   /* Nav */
   navBar:       { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 10 },
-  backBtn:      { width: 38, height: 38, borderRadius: 19, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  childChip:    { flexDirection: "row", alignItems: "center", gap: 9, backgroundColor: "#fff", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7, shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 2 },
+  backBtn:      { width: 38, height: 38, borderRadius: 19, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  childChip:    { flexDirection: "row", alignItems: "center", gap: 9, backgroundColor: "#fff", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 2 },
   chipAvatar:   { width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center" },
   chipInitials: { fontSize: 11, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold" },
-  chipName:     { fontSize: 13, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
-  chipAge:      { fontSize: 10, color: "#8B7BAB", fontFamily: "Inter_400Regular" },
+  chipName:     { fontSize: 13, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
+  chipAge:      { fontSize: 10, color: "#A090B8", fontFamily: "Inter_400Regular" },
   actionBtns:   { flexDirection: "row", gap: 8 },
-  iconBtn:      { width: 36, height: 36, borderRadius: 12, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#EDE9FF" },
+  iconBtn:      { width: 36, height: 36, borderRadius: 12, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#F0E8FF" },
 
   /* Canvas */
   canvasWrap: { flex: 1, paddingHorizontal: 16, paddingVertical: 6 },
   canvas: {
     flex: 1, backgroundColor: "#FFFFFF", borderRadius: 24, overflow: "hidden",
-    borderWidth: 2, borderColor: "#DDD6FF",
-    shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.1, shadowRadius: 16, elevation: 4,
+    borderWidth: 2, borderColor: "#EAD4F5",
+    shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.1, shadowRadius: 16, elevation: 4,
   },
   canvasHint:     { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center", gap: 10 },
-  canvasHintText: { fontSize: 15, color: "#DDD6FF", fontFamily: "Inter_500Medium" },
+  canvasHintText: { fontSize: 15, color: "#EAD4F5", fontFamily: "Inter_500Medium" },
 
   /* Tools */
   toolsSection:    { paddingHorizontal: 16, gap: 8, paddingBottom: 4 },
   colorsRow:       { gap: 9, alignItems: "center", paddingHorizontal: 2 },
   colorDot:        { width: 27, height: 27, borderRadius: 14 },
-  colorDotWhite:   { borderWidth: 1.5, borderColor: "#DDD6FF" },
-  colorDotSelected:{ borderWidth: 3, borderColor: "#6C4DFF", transform: [{ scale: 1.1 }] },
+  colorDotWhite:   { borderWidth: 1.5, borderColor: "#EAD4F5" },
+  colorDotSelected:{ borderWidth: 3, borderColor: "#A78BFA", transform: [{ scale: 1.1 }] },
   toolsRow:        { flexDirection: "row", gap: 10 },
-  toolBtn:         { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#EDE9FF", borderRadius: 14, paddingVertical: 9, borderWidth: 1, borderColor: "#DDD6FF" },
-  toolBtnActive:   { backgroundColor: "#6C4DFF", borderColor: "#6C4DFF" },
-  toolLabel:       { fontSize: 12, fontWeight: "600", color: "#6C4DFF", fontFamily: "Inter_600SemiBold" },
+  toolBtn:         { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#F0E8FF", borderRadius: 14, paddingVertical: 9, borderWidth: 1, borderColor: "#EAD4F5" },
+  toolBtnActive:   { backgroundColor: "#A78BFA", borderColor: "#A78BFA" },
+  toolLabel:       { fontSize: 12, fontWeight: "600", color: "#A78BFA", fontFamily: "Inter_600SemiBold" },
   toolLabelActive: { color: "#fff" },
 
   /* Description */
   descSection:    { paddingHorizontal: 16, gap: 6, paddingTop: 2, paddingBottom: 6 },
   descLabelRow:   { flexDirection: "row", alignItems: "center", gap: 5 },
-  descLabel:      { fontSize: 11, fontWeight: "600", color: "#8B7BAB", fontFamily: "Inter_600SemiBold", letterSpacing: 0.4, textTransform: "uppercase" },
-  descBox:        { backgroundColor: "#fff", borderRadius: 16, paddingHorizontal: 14, paddingTop: 10, paddingBottom: 6, borderWidth: 1.5, borderColor: "#DDD6FF", minHeight: 64 },
-  descBoxFocused: { borderColor: "#6C4DFF" },
-  descInput:      { fontSize: 13, color: "#1A0F2E", fontFamily: "Inter_400Regular", lineHeight: 20, minHeight: 40 },
+  descLabel:      { fontSize: 11, fontWeight: "600", color: "#A090B8", fontFamily: "Inter_600SemiBold", letterSpacing: 0.4, textTransform: "uppercase" },
+  descBox:        { backgroundColor: "#fff", borderRadius: 16, paddingHorizontal: 14, paddingTop: 10, paddingBottom: 6, borderWidth: 1.5, borderColor: "#EAD4F5", minHeight: 64 },
+  descBoxFocused: { borderColor: "#A78BFA" },
+  descInput:      { fontSize: 13, color: "#4A3070", fontFamily: "Inter_400Regular", lineHeight: 20, minHeight: 40 },
   charCount:      { fontSize: 10, color: "#C0B0D8", fontFamily: "Inter_400Regular", textAlign: "right", marginTop: 3 },
 
   /* Analyze */
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   analyzeBtn: {
     flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10,
     paddingVertical: 17, borderRadius: 28,
-    shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 20, elevation: 12,
+    shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 20, elevation: 12,
   },
   analyzeBtnText: { fontSize: 17, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold", letterSpacing: -0.2 },
 });

@@ -57,7 +57,7 @@ export default function LanguageScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={22} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Language</Text>
         <View style={{ width: 40 }} />
@@ -91,12 +91,12 @@ export default function LanguageScreen() {
                     <Text style={[styles.optionLabel, active && styles.optionLabelActive]}>
                       {lang.label}
                     </Text>
-                    <Text style={[styles.optionNative, active && { color: "#6C4DFF" }]}>
+                    <Text style={[styles.optionNative, active && { color: "#A78BFA" }]}>
                       {lang.native}
                     </Text>
                   </View>
                   {active ? (
-                    <LinearGradient colors={["#6C4DFF", "#9B7FFF"]} style={styles.checkCircle}>
+                    <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} style={styles.checkCircle}>
                       <Ionicons name="checkmark" size={16} color="#fff" />
                     </LinearGradient>
                   ) : (
@@ -117,33 +117,33 @@ export default function LanguageScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  navTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
 
   body: { flex: 1, paddingHorizontal: 20 },
 
   hero: { alignItems: "center", gap: 10, marginBottom: 32, marginTop: 8 },
   heroIcon: { width: 68, height: 68, borderRadius: 24, alignItems: "center", justifyContent: "center", shadowColor: "#90BE6D", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
-  heroTitle: { fontSize: 22, fontWeight: "800", color: "#1A0F2E", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
-  heroSub: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
+  heroTitle: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
+  heroSub: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
 
   optionsList: { gap: 12 },
   optionCard: {
     flexDirection: "row", alignItems: "center", gap: 16,
     backgroundColor: "#fff", borderRadius: 22, padding: 18,
     borderWidth: 2, borderColor: "transparent",
-    shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3,
+    shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3,
   },
-  optionCardActive: { borderColor: "#6C4DFF", backgroundColor: "#F8F5FF" },
+  optionCardActive: { borderColor: "#A78BFA", backgroundColor: "#F8F5FF" },
   flag: { fontSize: 32 },
   optionTexts: { flex: 1, gap: 2 },
-  optionLabel: { fontSize: 17, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
-  optionLabelActive: { color: "#6C4DFF" },
-  optionNative: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_400Regular" },
+  optionLabel: { fontSize: 17, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
+  optionLabelActive: { color: "#A78BFA" },
+  optionNative: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular" },
   checkCircle: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  emptyCircle: { width: 32, height: 32, borderRadius: 16, borderWidth: 2, borderColor: "#DDD6FF" },
+  emptyCircle: { width: 32, height: 32, borderRadius: 16, borderWidth: 2, borderColor: "#EAD4F5" },
 
   footerNote: { fontSize: 12, color: "#B0A0CC", fontFamily: "Inter_400Regular", textAlign: "center", marginTop: 28 },
 });

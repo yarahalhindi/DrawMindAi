@@ -40,7 +40,7 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient
-      colors={["#F5F1FF", "#EDE9FF"]}
+      colors={["#FDF8F5", "#F5ECF8"]}
       style={[styles.container]}
     >
       <KeyboardAvoidingView
@@ -57,7 +57,7 @@ export default function LoginScreen() {
         >
           <View style={styles.header}>
             <LinearGradient
-              colors={["#6C4DFF", "#9B7FFF"]}
+              colors={["#C4A8F5", "#F0A8C8"]}
               style={styles.logoCircle}
             >
               <Ionicons name="brain" size={32} color="#fff" />
@@ -78,13 +78,13 @@ export default function LoginScreen() {
                 <Ionicons
                   name="person-outline"
                   size={20}
-                  color="#8B7BAB"
+                  color="#A090B8"
                   style={styles.inputIcon}
                 />
                 <TextInput
                   style={styles.input}
                   placeholder="Full Name"
-                  placeholderTextColor="#8B7BAB"
+                  placeholderTextColor="#A090B8"
                   value={name}
                   onChangeText={setName}
                   autoCapitalize="words"
@@ -96,13 +96,13 @@ export default function LoginScreen() {
               <Ionicons
                 name="mail-outline"
                 size={20}
-                color="#8B7BAB"
+                color="#A090B8"
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Email address"
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -114,13 +114,13 @@ export default function LoginScreen() {
               <Ionicons
                 name="lock-closed-outline"
                 size={20}
-                color="#8B7BAB"
+                color="#A090B8"
                 style={styles.inputIcon}
               />
               <TextInput
                 style={[styles.input, { flex: 1 }]}
                 placeholder="Password"
-                placeholderTextColor="#8B7BAB"
+                placeholderTextColor="#A090B8"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -132,7 +132,7 @@ export default function LoginScreen() {
                 <Ionicons
                   name={showPassword ? "eye-outline" : "eye-off-outline"}
                   size={20}
-                  color="#8B7BAB"
+                  color="#A090B8"
                 />
               </TouchableOpacity>
             </View>
@@ -159,11 +159,11 @@ export default function LoginScreen() {
 
             <View style={styles.socialRow}>
               <TouchableOpacity style={styles.socialBtn}>
-                <Ionicons name="logo-google" size={22} color="#6C4DFF" />
+                <Ionicons name="logo-google" size={22} color="#A78BFA" />
                 <Text style={styles.socialLabel}>Google</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.socialBtn}>
-                <Ionicons name="logo-apple" size={22} color="#1A0F2E" />
+                <Ionicons name="logo-apple" size={22} color="#4A3070" />
                 <Text style={styles.socialLabel}>Apple</Text>
               </TouchableOpacity>
             </View>
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
     shadowRadius: 16,
@@ -211,22 +211,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     marginBottom: 6,
   },
   subtitle: {
     fontSize: 15,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
   },
   card: {
-    backgroundColor: "rgba(255,255,255,0.95)",
+    backgroundColor: "rgba(255,248,252,0.97)",
     borderRadius: 28,
     padding: 24,
     borderWidth: 1,
-    borderColor: "rgba(221,214,255,0.5)",
-    shadowColor: "#6C4DFF",
+    borderColor: "rgba(234,212,245,0.6)",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.1,
     shadowRadius: 24,
@@ -236,12 +236,12 @@ const styles = StyleSheet.create({
   inputWrap: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#FFF0F6",
     borderRadius: 16,
     paddingHorizontal: 16,
     height: 54,
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   inputIcon: {
     marginRight: 10,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_400Regular",
   },
   eyeBtn: {
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   },
   forgot: {
     fontSize: 13,
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },
@@ -275,11 +275,11 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: "#DDD6FF",
+    backgroundColor: "#EAD4F5",
   },
   dividerText: {
     fontSize: 13,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
   },
   socialRow: {
@@ -292,17 +292,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#FFF5F8",
     borderRadius: 14,
     height: 50,
     borderWidth: 1,
-    borderColor: "#DDD6FF",
+    borderColor: "#EAD4F5",
   },
   socialLabel: {
     fontSize: 15,
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
-    color: "#1A0F2E",
+    color: "#4A3070",
   },
   switchRow: {
     flexDirection: "row",
@@ -311,12 +311,12 @@ const styles = StyleSheet.create({
   },
   switchText: {
     fontSize: 14,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
   },
   switchLink: {
     fontSize: 14,
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_700Bold",
     fontWeight: "700",
   },

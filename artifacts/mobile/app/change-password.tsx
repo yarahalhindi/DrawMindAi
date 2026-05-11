@@ -46,7 +46,7 @@ function PasswordField({
           autoCapitalize="none"
         />
         <TouchableOpacity onPress={() => setShow((s) => !s)} style={pf.eyeBtn}>
-          <Ionicons name={show ? "eye-off-outline" : "eye-outline"} size={18} color="#8B7BAB" />
+          <Ionicons name={show ? "eye-off-outline" : "eye-outline"} size={18} color="#A090B8" />
         </TouchableOpacity>
       </View>
     </View>
@@ -56,9 +56,9 @@ function PasswordField({
 const pf = StyleSheet.create({
   wrap: { gap: 7 },
   label: { fontSize: 13, fontWeight: "600", color: "#4A3880", fontFamily: "Inter_600SemiBold" },
-  inputRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, paddingHorizontal: 16, borderWidth: 1.5, borderColor: "#DDD6FF", height: 52 },
-  inputRowFocused: { borderColor: "#6C4DFF" },
-  input: { flex: 1, fontSize: 15, color: "#1A0F2E", fontFamily: "Inter_400Regular" },
+  inputRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, paddingHorizontal: 16, borderWidth: 1.5, borderColor: "#EAD4F5", height: 52 },
+  inputRowFocused: { borderColor: "#A78BFA" },
+  input: { flex: 1, fontSize: 15, color: "#4A3070", fontFamily: "Inter_400Regular" },
   eyeBtn: { padding: 4 },
 });
 
@@ -101,7 +101,7 @@ export default function ChangePasswordScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={22} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Change Password</Text>
         <View style={{ width: 40 }} />
@@ -141,7 +141,7 @@ export default function ChangePasswordScreen() {
                       next.length >= i * 3
                         ? next.length >= 10 ? "#90BE6D"
                           : next.length >= 6 ? "#F8961E" : "#FF6B6B"
-                        : "#EDE9FF",
+                        : "#F0E8FF",
                   },
                 ]}
               />
@@ -173,22 +173,22 @@ export default function ChangePasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  navTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingTop: 8 },
 
   hero: { alignItems: "center", gap: 10, marginBottom: 28 },
   heroIcon: { width: 68, height: 68, borderRadius: 24, alignItems: "center", justifyContent: "center", shadowColor: "#F8961E", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
-  heroTitle: { fontSize: 22, fontWeight: "800", color: "#1A0F2E", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
-  heroSub: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
+  heroTitle: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
+  heroSub: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
 
   fields: { gap: 16, marginBottom: 20 },
 
   strengthRow: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 20 },
   strengthBar: { flex: 1, height: 5, borderRadius: 3 },
-  strengthLabel: { fontSize: 11, color: "#8B7BAB", fontFamily: "Inter_500Medium", width: 56, textAlign: "right" },
+  strengthLabel: { fontSize: 11, color: "#A090B8", fontFamily: "Inter_500Medium", width: 56, textAlign: "right" },
 
   updateBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginBottom: 16, shadowColor: "#F8961E", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 18, elevation: 10 },
   updateBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },

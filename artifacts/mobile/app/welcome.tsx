@@ -58,7 +58,7 @@ export default function WelcomeScreen() {
 
   return (
     <LinearGradient
-      colors={["#2D1B8E", "#6C4DFF", "#B89CFF"]}
+      colors={["#C4A8F5", "#D8B4F0", "#F5C0DC"]}
       start={{ x: 0.1, y: 0 }}
       end={{ x: 0.9, y: 1 }}
       style={[styles.container, { paddingTop: topPad, paddingBottom: botPad }]}
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(255,255,255,0.25)",
     top: -60,
     left: -80,
   },
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(255,255,255,0.2)",
     bottom: 80,
     right: -50,
   },
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "rgba(184,156,255,0.2)",
+    backgroundColor: "rgba(255,200,235,0.3)",
     top: "40%",
     left: 20,
   },
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 36,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.5,
     marginBottom: 12,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontSize: 16,
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(90,60,120,0.7)",
     textAlign: "center",
     lineHeight: 24,
     fontFamily: "Inter_400Regular",

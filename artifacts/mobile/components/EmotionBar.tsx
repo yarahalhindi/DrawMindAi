@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   track: {
     height: 10,
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     borderRadius: 10,
     overflow: "hidden",
   },

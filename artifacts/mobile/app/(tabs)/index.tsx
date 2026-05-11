@@ -83,8 +83,8 @@ function SparklineChart({
           <Stop offset="1" stopColor="#FF6B9D" stopOpacity="0" />
         </SvgGradient>
         <SvgGradient id="aGrad" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#6C4DFF" stopOpacity="0.25" />
-          <Stop offset="1" stopColor="#6C4DFF" stopOpacity="0" />
+          <Stop offset="0" stopColor="#C4A8F5" stopOpacity="0.25" />
+          <Stop offset="1" stopColor="#C4A8F5" stopOpacity="0" />
         </SvgGradient>
       </Defs>
       <Path d={area(activityData)} fill="url(#aGrad)" />
@@ -92,7 +92,7 @@ function SparklineChart({
       <Path
         d={smooth(activityData)}
         fill="none"
-        stroke="#6C4DFF"
+        stroke="#A78BFA"
         strokeWidth="2.5"
         strokeLinecap="round"
       />
@@ -170,7 +170,7 @@ function ChildCircle({
       <Text
         style={[
           styles.circleName,
-          selected && { color: "#6C4DFF", fontFamily: "Inter_700Bold" },
+          selected && { color: "#A78BFA", fontFamily: "Inter_700Bold" },
         ]}
         numberOfLines={1}
       >
@@ -401,7 +401,7 @@ export default function HomeScreen() {
           style={{ opacity: fadeGreet, transform: [{ translateY: fadeGreet.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }}
         >
           <LinearGradient
-            colors={["#4A30E0", "#6C4DFF", "#9B7FFF"]}
+            colors={["#C4A8F5", "#D4B0F0", "#F0B8D8"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.welcomeCard}
@@ -472,7 +472,7 @@ export default function HomeScreen() {
               style={styles.circleWrap}
             >
               <View style={styles.addCircle}>
-                <Ionicons name="add" size={28} color="#6C4DFF" />
+                <Ionicons name="add" size={28} color="#A78BFA" />
               </View>
               <Text style={styles.circleName}>Add</Text>
             </TouchableOpacity>
@@ -491,7 +491,7 @@ export default function HomeScreen() {
               },
             ]}
           >
-            <Ionicons name="checkmark-circle" size={16} color="#6C4DFF" />
+            <Ionicons name="checkmark-circle" size={16} color="#A78BFA" />
             <Text style={styles.clearedToastText}>Analysis hidden — tap again to restore</Text>
           </Animated.View>
         )}
@@ -532,7 +532,7 @@ export default function HomeScreen() {
                   <Text style={styles.legendLabel}>Emotion</Text>
                 </View>
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendDot, { backgroundColor: "#6C4DFF" }]} />
+                  <View style={[styles.legendDot, { backgroundColor: "#A78BFA" }]} />
                   <Text style={styles.legendLabel}>Activity</Text>
                 </View>
               </View>
@@ -589,14 +589,14 @@ export default function HomeScreen() {
           >
             <View style={styles.insightCard}>
               <LinearGradient
-                colors={["#EDE9FF", "#F5F1FF"]}
+                colors={["#F5ECF8", "#FDF8F5"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.insightGradient}
               >
                 <View style={styles.insightHeader}>
                   <View style={styles.insightIconWrap}>
-                    <Ionicons name="sparkles" size={16} color="#6C4DFF" />
+                    <Ionicons name="sparkles" size={16} color="#A78BFA" />
                   </View>
                   <Text style={styles.insightHeading}>AI Insight</Text>
                 </View>
@@ -616,7 +616,7 @@ export default function HomeScreen() {
                   <Ionicons
                     name="chevron-forward"
                     size={13}
-                    color="#6C4DFF"
+                    color="#A78BFA"
                   />
                 </TouchableOpacity>
               </LinearGradient>
@@ -639,14 +639,14 @@ export default function HomeScreen() {
               icon="cloud-upload-outline"
               label="Upload Drawing"
               sub="Analyze from your camera roll"
-              colors={["#5535E8", "#6C4DFF", "#9B7FFF"]}
+              colors={["#C4A8F5", "#D4B0F0", "#E8B8D8"]}
               onPress={() => router.push({ pathname: "/choose-child", params: { mode: "upload" } })}
             />
             <ActionBtn
               icon="brush-outline"
               label="Draw"
               sub="Create a new drawing to analyze"
-              colors={["#C084FC", "#A855F7", "#7C3AED"]}
+              colors={["#F0A8C8", "#E0A0D8", "#C4A8F5"]}
               onPress={() => router.push({ pathname: "/choose-child", params: { mode: "draw" } })}
             />
           </View>
@@ -657,7 +657,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   scroll: { paddingHorizontal: 20 },
 
   /* ── Welcome Card ── */
@@ -670,9 +670,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     flexDirection: "row",
     alignItems: "flex-end",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.38,
+    shadowOpacity: 0.4,
     shadowRadius: 28,
     elevation: 14,
     minHeight: 160,
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: "rgba(255,255,255,0.07)",
+    backgroundColor: "rgba(255,255,255,0.3)",
     top: -50,
     right: -30,
   },
@@ -691,21 +691,21 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "rgba(255,255,255,0.05)",
+    backgroundColor: "rgba(255,255,255,0.2)",
     bottom: 10,
     left: -20,
   },
   welcomeLeft: { flex: 1, paddingBottom: 24 },
   welcomeGreeting: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(74,48,112,0.72)",
     fontFamily: "Inter_400Regular",
     letterSpacing: 0.3,
   },
   welcomeName: {
     fontSize: 26,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.5,
     marginTop: 3,
@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
   },
   welcomeSub: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.62)",
+    color: "rgba(74,48,112,0.62)",
     fontFamily: "Inter_400Regular",
     lineHeight: 18,
     marginBottom: 14,
@@ -722,7 +722,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 7,
-    backgroundColor: "rgba(255,255,255,0.16)",
+    backgroundColor: "rgba(255,255,255,0.45)",
     alignSelf: "flex-start",
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
   },
   welcomeChipText: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.88)",
+    color: "rgba(74,48,112,0.88)",
     fontFamily: "Inter_500Medium",
   },
   welcomeRight: {
@@ -759,13 +759,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 19,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.3,
   },
   seeAll: {
     fontSize: 13,
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_600SemiBold",
     fontWeight: "600",
   },
@@ -829,7 +829,7 @@ const styles = StyleSheet.create({
   circleName: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#4A3880",
+    color: "#7A6090",
     fontFamily: "Inter_600SemiBold",
     textAlign: "center",
     marginTop: 8,
@@ -848,9 +848,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
-    borderColor: "#D4C8FF",
+    borderColor: "#EAD4F5",
     borderStyle: "dashed",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
@@ -862,33 +862,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF5F8",
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 16,
     marginBottom: 14,
     alignSelf: "center",
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.14,
     shadowRadius: 12,
     elevation: 6,
     borderWidth: 1,
-    borderColor: "#E8E2FF",
+    borderColor: "#EAD4F5",
   },
   clearedToastText: {
     fontSize: 12,
-    color: "#5A4A7A",
+    color: "#7A6090",
     fontFamily: "Inter_500Medium",
   },
 
   /* ── Chart card ── */
   chartCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF5F8",
     borderRadius: 28,
     padding: 20,
     marginBottom: 16,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.09,
     shadowRadius: 20,
@@ -903,7 +903,7 @@ const styles = StyleSheet.create({
   legendDot: { width: 9, height: 9, borderRadius: 5 },
   legendLabel: {
     fontSize: 12,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_500Medium",
   },
   chartBody: { alignItems: "center" },
@@ -940,7 +940,7 @@ const styles = StyleSheet.create({
   chartStatNum: {
     fontSize: 20,
     fontWeight: "800",
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_700Bold",
   },
   chartStatLabel: {
@@ -955,7 +955,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: "hidden",
     marginBottom: 28,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
@@ -965,7 +965,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 18,
     borderWidth: 1.5,
-    borderColor: "rgba(108,77,255,0.12)",
+    borderColor: "rgba(196,168,245,0.25)",
   },
   insightHeader: {
     flexDirection: "row",
@@ -977,19 +977,19 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 10,
-    backgroundColor: "#E4DDFF",
+    backgroundColor: "#F0E8FF",
     alignItems: "center",
     justifyContent: "center",
   },
   insightHeading: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#3D2A6E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   insightText: {
     fontSize: 13,
-    color: "#5A4A7A",
+    color: "#7A6090",
     fontFamily: "Inter_400Regular",
     lineHeight: 20,
     marginBottom: 12,
@@ -1003,7 +1003,7 @@ const styles = StyleSheet.create({
   insightLinkText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_700Bold",
   },
 
@@ -1017,7 +1017,7 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     paddingHorizontal: 20,
     borderRadius: 22,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.28,
     shadowRadius: 18,

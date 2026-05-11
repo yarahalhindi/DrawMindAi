@@ -21,7 +21,7 @@ const EMOTION_COLORS: Record<string, string> = {
   Sad:     "#577590",
   Angry:   "#F3722C",
   Anxiety: "#F8961E",
-  Fear:    "#9B7FFF",
+  Fear:    "#C4B0FF",
 };
 
 // ── Child selection card ──────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ function ChildRow({
     });
   }
 
-  const emotionColor = EMOTION_COLORS[emotionSummary.split(" ")[0]] ?? "#6C4DFF";
+  const emotionColor = EMOTION_COLORS[emotionSummary.split(" ")[0]] ?? "#A78BFA";
 
   return (
     <Animated.View
@@ -89,7 +89,7 @@ function ChildRow({
             <Text style={styles.childMeta}>Age {child.age} · {child.gender}</Text>
             <View style={styles.metaRow}>
               <View style={styles.drawingCountBadge}>
-                <Ionicons name="brush-outline" size={11} color="#8B7BAB" />
+                <Ionicons name="brush-outline" size={11} color="#A090B8" />
                 <Text style={styles.drawingCountText}>{drawingCount} drawing{drawingCount !== 1 ? "s" : ""}</Text>
               </View>
               {drawingCount > 0 && (
@@ -148,7 +148,7 @@ export default function DrawingsScreen() {
           >
             <View style={styles.addRow}>
               <View style={styles.addCircle}>
-                <Ionicons name="add" size={24} color="#6C4DFF" />
+                <Ionicons name="add" size={24} color="#A78BFA" />
               </View>
               <Text style={styles.addLabel}>Add a new child</Text>
               <Ionicons name="chevron-forward" size={18} color="#B89CFF" />
@@ -159,18 +159,18 @@ export default function DrawingsScreen() {
         {children.length === 0 && (
           <View style={styles.emptyState}>
             <LinearGradient
-              colors={["#EDE9FF", "#F5F1FF"]}
+              colors={["#F0E8FF", "#FDF8F5"]}
               style={styles.emptyIcon}
             >
               <Ionicons name="people-outline" size={40} color="#B89CFF" />
             </LinearGradient>
-            <Text style={styles.emptyTitle}>No Children Added</Text>
+            <Text style={[styles.emptyTitle, { color: "#4A3070" }]}>No Children Added</Text>
             <Text style={styles.emptySubtitle}>
               Add your first child to start tracking their emotional development through drawings.
             </Text>
             <TouchableOpacity onPress={() => router.push("/add-child")} activeOpacity={0.85}>
               <LinearGradient
-                colors={["#6C4DFF", "#9B7FFF"]}
+                colors={["#C4A8F5", "#F0A8C8"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.emptyBtn}
@@ -187,20 +187,20 @@ export default function DrawingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   scroll: { paddingHorizontal: 20 },
 
   pageTitle: {
     fontSize: 30,
     fontWeight: "800",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.8,
     marginBottom: 6,
   },
   pageSubtitle: {
     fontSize: 14,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
     marginBottom: 24,
     lineHeight: 20,
@@ -213,10 +213,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF5F8",
     borderRadius: 24,
     padding: 16,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
@@ -255,13 +255,13 @@ const styles = StyleSheet.create({
   childName: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.2,
   },
   childMeta: {
     fontSize: 12,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
   },
   metaRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 2 },
@@ -269,14 +269,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#F5ECF8",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 10,
   },
   drawingCountText: {
     fontSize: 11,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_500Medium",
   },
   emotionBadge: {
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#F5F1FF",
+    backgroundColor: "#F5ECF8",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -303,18 +303,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF5F8",
     borderRadius: 24,
     padding: 16,
     borderWidth: 2,
-    borderColor: "#E8E2FF",
+    borderColor: "#EAD4F5",
     borderStyle: "dashed",
   },
   addCircle: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#EDE9FF",
+    backgroundColor: "#F0E8FF",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: "600",
-    color: "#6C4DFF",
+    color: "#A78BFA",
     fontFamily: "Inter_600SemiBold",
   },
 
@@ -338,12 +338,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontFamily: "Inter_700Bold",
   },
   emptySubtitle: {
     fontSize: 13,
-    color: "#8B7BAB",
+    color: "#A090B8",
     fontFamily: "Inter_400Regular",
     textAlign: "center",
     lineHeight: 20,
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingVertical: 14,
     borderRadius: 22,
-    shadowColor: "#6C4DFF",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.28,
     shadowRadius: 14,

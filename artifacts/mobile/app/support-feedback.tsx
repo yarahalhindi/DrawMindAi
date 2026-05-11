@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const CATEGORIES = [
   { id: "bug",        label: "Bug Report",   icon: "bug-outline",        color: "#FF6B6B" },
   { id: "suggestion", label: "Suggestion",   icon: "bulb-outline",       color: "#F8961E" },
-  { id: "issue",      label: "Other Issue",  icon: "alert-circle-outline", color: "#9B7FFF" },
+  { id: "issue",      label: "Other Issue",  icon: "alert-circle-outline", color: "#C4B0FF" },
 ];
 
 export default function SupportFeedbackScreen() {
@@ -55,7 +55,7 @@ export default function SupportFeedbackScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={22} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Support & Feedback</Text>
         <View style={{ width: 40 }} />
@@ -87,7 +87,7 @@ export default function SupportFeedbackScreen() {
                 style={[styles.categoryBtn, active && { borderColor: cat.color, backgroundColor: cat.color + "14" }]}
                 activeOpacity={0.8}
               >
-                <Ionicons name={cat.icon as any} size={18} color={active ? cat.color : "#8B7BAB"} />
+                <Ionicons name={cat.icon as any} size={18} color={active ? cat.color : "#A090B8"} />
                 <Text style={[styles.categoryLabel, active && { color: cat.color, fontFamily: "Inter_700Bold" }]}>
                   {cat.label}
                 </Text>
@@ -143,26 +143,26 @@ export default function SupportFeedbackScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  navTitle: { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingTop: 8 },
 
   hero: { alignItems: "center", gap: 10, marginBottom: 28 },
   heroIcon: { width: 68, height: 68, borderRadius: 24, alignItems: "center", justifyContent: "center", shadowColor: "#48CAE4", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
-  heroTitle: { fontSize: 22, fontWeight: "800", color: "#1A0F2E", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
-  heroSub: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
+  heroTitle: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
+  heroSub: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
 
   sectionLabel: { fontSize: 13, fontWeight: "700", color: "#4A3880", fontFamily: "Inter_700Bold", marginBottom: 10, letterSpacing: 0.3, textTransform: "uppercase" },
 
   categoriesRow: { flexDirection: "row", gap: 10, marginBottom: 22, flexWrap: "wrap" },
-  categoryBtn: { flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, borderWidth: 1.5, borderColor: "#DDD6FF", backgroundColor: "#fff" },
-  categoryLabel: { fontSize: 13, color: "#8B7BAB", fontFamily: "Inter_500Medium", fontWeight: "500" },
+  categoryBtn: { flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, borderWidth: 1.5, borderColor: "#EAD4F5", backgroundColor: "#fff" },
+  categoryLabel: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_500Medium", fontWeight: "500" },
 
-  messageBox: { backgroundColor: "#fff", borderRadius: 20, padding: 16, marginBottom: 20, borderWidth: 1.5, borderColor: "#DDD6FF", minHeight: 140 },
-  messageBoxFocused: { borderColor: "#6C4DFF" },
-  messageInput: { fontSize: 14, color: "#1A0F2E", fontFamily: "Inter_400Regular", lineHeight: 22, minHeight: 100 },
+  messageBox: { backgroundColor: "#fff", borderRadius: 20, padding: 16, marginBottom: 20, borderWidth: 1.5, borderColor: "#EAD4F5", minHeight: 140 },
+  messageBoxFocused: { borderColor: "#A78BFA" },
+  messageInput: { fontSize: 14, color: "#4A3070", fontFamily: "Inter_400Regular", lineHeight: 22, minHeight: 100 },
   charCount: { fontSize: 10, color: "#C0B0D8", fontFamily: "Inter_400Regular", textAlign: "right", marginTop: 6 },
 
   sendBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginBottom: 16, shadowColor: "#48CAE4", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 18, elevation: 10 },

@@ -59,7 +59,7 @@ function Field({
         />
         {secure && (
           <TouchableOpacity onPress={() => setShow((s) => !s)} style={f.eyeBtn}>
-            <Ionicons name={show ? "eye-off-outline" : "eye-outline"} size={17} color="#8B7BAB" />
+            <Ionicons name={show ? "eye-off-outline" : "eye-outline"} size={17} color="#A090B8" />
           </TouchableOpacity>
         )}
       </View>
@@ -70,10 +70,10 @@ const f = StyleSheet.create({
   wrap:           { gap: 7 },
   labelRow:       { flexDirection: "row", alignItems: "center", gap: 8 },
   label:          { fontSize: 13, fontWeight: "600", color: "#4A3880", fontFamily: "Inter_600SemiBold" },
-  optional:       { fontSize: 11, color: "#B0A0CC", fontFamily: "Inter_400Regular", backgroundColor: "#EDE9FF", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 },
-  inputRow:       { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, paddingHorizontal: 16, borderWidth: 1.5, borderColor: "#DDD6FF", height: 52 },
-  inputRowFocused:{ borderColor: "#6C4DFF" },
-  input:          { flex: 1, fontSize: 15, color: "#1A0F2E", fontFamily: "Inter_400Regular" },
+  optional:       { fontSize: 11, color: "#B0A0CC", fontFamily: "Inter_400Regular", backgroundColor: "#F0E8FF", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 },
+  inputRow:       { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, paddingHorizontal: 16, borderWidth: 1.5, borderColor: "#EAD4F5", height: 52 },
+  inputRowFocused:{ borderColor: "#A78BFA" },
+  input:          { flex: 1, fontSize: 15, color: "#4A3070", fontFamily: "Inter_400Regular" },
   eyeBtn:         { padding: 4 },
 });
 
@@ -123,7 +123,7 @@ export default function EditProfileScreen() {
       {/* Nav */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1A0F2E" />
+          <Ionicons name="chevron-back" size={22} color="#4A3070" />
         </TouchableOpacity>
         <Text style={styles.navTitle}>Edit Profile</Text>
         <View style={{ width: 40 }} />
@@ -136,7 +136,7 @@ export default function EditProfileScreen() {
       >
         {/* Avatar hero */}
         <View style={styles.avatarSection}>
-          <LinearGradient colors={["#4A30E0", "#6C4DFF", "#9B7FFF"]} style={styles.avatar}>
+          <LinearGradient colors={["#C4A8F5", "#D4B0F0", "#F0A8C8"]} style={styles.avatar}>
             <Text style={styles.avatarText}>{initials}</Text>
           </LinearGradient>
           <Text style={styles.avatarName}>{name || "Your Name"}</Text>
@@ -173,12 +173,12 @@ export default function EditProfileScreen() {
                 style={[styles.roleCard, active && styles.roleCardActive]}
               >
                 <View style={[styles.roleIconWrap, active && styles.roleIconWrapActive]}>
-                  <Ionicons name={rel.icon as any} size={18} color={active ? "#fff" : "#6C4DFF"} />
+                  <Ionicons name={rel.icon as any} size={18} color={active ? "#fff" : "#A78BFA"} />
                 </View>
                 <Text style={[styles.roleLabel, active && styles.roleLabelActive]}>{rel.label}</Text>
                 {active && (
                   <View style={styles.roleCheck}>
-                    <Ionicons name="checkmark-circle" size={14} color="#6C4DFF" />
+                    <Ionicons name="checkmark-circle" size={14} color="#A78BFA" />
                   </View>
                 )}
               </TouchableOpacity>
@@ -201,7 +201,7 @@ export default function EditProfileScreen() {
         {/* ── Save button ── */}
         <TouchableOpacity onPress={handleSave} disabled={saving} activeOpacity={0.88}>
           <LinearGradient
-            colors={["#4A30E0", "#6C4DFF", "#9B7FFF"]}
+            colors={["#C4A8F5", "#D4B0F0", "#F0A8C8"]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.saveBtn}
           >
@@ -215,25 +215,25 @@ export default function EditProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar:    { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
-  backBtn:   { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  navTitle:  { fontSize: 18, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold" },
+  backBtn:   { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  navTitle:  { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll:    { paddingHorizontal: 20, paddingTop: 4 },
 
   /* Avatar */
   avatarSection: { alignItems: "center", gap: 8, marginBottom: 28 },
-  avatar:        { width: 88, height: 88, borderRadius: 44, alignItems: "center", justifyContent: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 20, elevation: 12 },
+  avatar:        { width: 88, height: 88, borderRadius: 44, alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.35, shadowRadius: 20, elevation: 12 },
   avatarText:    { fontSize: 30, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold" },
-  avatarName:    { fontSize: 20, fontWeight: "800", color: "#1A0F2E", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
+  avatarName:    { fontSize: 20, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
   avatarSub:     { fontSize: 12, color: "#B0A0CC", fontFamily: "Inter_400Regular" },
 
   /* Section */
-  sectionTitle: { fontSize: 14, fontWeight: "700", color: "#1A0F2E", fontFamily: "Inter_700Bold", marginBottom: 12, letterSpacing: -0.1 },
-  sectionSub:   { fontSize: 12, color: "#8B7BAB", fontFamily: "Inter_400Regular", marginBottom: 14, marginTop: -8, lineHeight: 18 },
+  sectionTitle: { fontSize: 14, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold", marginBottom: 12, letterSpacing: -0.1 },
+  sectionSub:   { fontSize: 12, color: "#A090B8", fontFamily: "Inter_400Regular", marginBottom: 14, marginTop: -8, lineHeight: 18 },
 
   /* Fields card */
-  fieldsCard: { backgroundColor: "#fff", borderRadius: 22, padding: 18, gap: 16, marginBottom: 20, shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3 },
+  fieldsCard: { backgroundColor: "#fff", borderRadius: 22, padding: 18, gap: 16, marginBottom: 20, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3 },
   divider:    { height: 1, backgroundColor: "#F0EEFF" },
 
   /* Role grid */
@@ -248,24 +248,24 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 10,
     borderWidth: 1.5,
-    borderColor: "#DDD6FF",
-    shadowColor: "#6C4DFF",
+    borderColor: "#EAD4F5",
+    shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
     position: "relative",
   },
-  roleCardActive:    { borderColor: "#6C4DFF", backgroundColor: "#F5F1FF" },
-  roleIconWrap:      { width: 40, height: 40, borderRadius: 14, backgroundColor: "#EDE9FF", alignItems: "center", justifyContent: "center" },
-  roleIconWrapActive:{ backgroundColor: "#6C4DFF" },
+  roleCardActive:    { borderColor: "#A78BFA", backgroundColor: "#FDF8F5" },
+  roleIconWrap:      { width: 40, height: 40, borderRadius: 14, backgroundColor: "#F0E8FF", alignItems: "center", justifyContent: "center" },
+  roleIconWrapActive:{ backgroundColor: "#A78BFA" },
   roleLabel:         { fontSize: 12, fontWeight: "600", color: "#4A3880", fontFamily: "Inter_600SemiBold", textAlign: "center" },
-  roleLabelActive:   { color: "#6C4DFF", fontFamily: "Inter_700Bold" },
+  roleLabelActive:   { color: "#A78BFA", fontFamily: "Inter_700Bold" },
   roleCheck:         { position: "absolute", top: 8, right: 8 },
 
   customRoleWrap: { marginBottom: 16 },
 
   /* Save */
-  saveBtn:     { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginTop: 4, shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 10 },
+  saveBtn:     { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginTop: 4, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 10 },
   saveBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 });

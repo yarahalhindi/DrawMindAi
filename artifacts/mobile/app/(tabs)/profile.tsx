@@ -18,14 +18,14 @@ import { useApp } from "@/context/AppContext";
 
 // ── Settings items with their routes ─────────────────────────────────────────
 const SETTINGS = [
-  { icon: "person-outline",            label: "Edit Profile",         color: "#6C4DFF", route: "/edit-profile" },
+  { icon: "person-outline",            label: "Edit Profile",         color: "#A78BFA", route: "/edit-profile" },
   { icon: "people-outline",            label: "Update Child Info",    color: "#B89CFF", route: "/choose-child?mode=edit" },
   { icon: "chatbubble-outline",        label: "Support & Feedback",   color: "#48CAE4", route: "/support-feedback" },
   { icon: "language-outline",          label: "Language",             color: "#90BE6D", route: "/language" },
   { icon: "lock-closed-outline",       label: "Change Password",      color: "#F8961E", route: "/change-password" },
-  { icon: "information-circle-outline",label: "About App",            color: "#9B7FFF", route: "/about-app" },
+  { icon: "information-circle-outline",label: "About App",            color: "#C4B0FF", route: "/about-app" },
   { icon: "shield-outline",            label: "Privacy Policy",       color: "#577590", route: "/privacy-policy" },
-  { icon: "document-text-outline",     label: "Terms of Use",         color: "#8B7BAB", route: "/terms-of-use" },
+  { icon: "document-text-outline",     label: "Terms of Use",         color: "#A090B8", route: "/terms-of-use" },
 ] as const;
 
 export default function ProfileScreen() {
@@ -64,7 +64,7 @@ export default function ProfileScreen() {
       >
         {/* ── Gradient Header ── */}
         <LinearGradient
-          colors={["#2D1B8E", "#6C4DFF", "#9B7FFF"]}
+          colors={["#C4A8F5", "#D4B0F0", "#F0B8D8"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.headerBg, { paddingTop: topPad + 20 }]}
@@ -95,7 +95,7 @@ export default function ProfileScreen() {
 
           {/* Premium Banner */}
           <LinearGradient
-            colors={["#6C4DFF", "#B89CFF"]}
+            colors={["#C4A8F5", "#F0A8C8"]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.premiumBanner}
           >
@@ -141,21 +141,21 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F1FF" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   headerBg: { paddingHorizontal: 20, paddingBottom: 60, alignItems: "center" },
   avatarLarge: { width: 88, height: 88, borderRadius: 44, backgroundColor: "rgba(255,255,255,0.25)", alignItems: "center", justifyContent: "center", borderWidth: 3, borderColor: "rgba(255,255,255,0.5)", marginBottom: 12 },
-  avatarLargeText: { fontSize: 36, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
-  profileName: { fontSize: 22, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold", marginBottom: 4 },
-  profileEmail: { fontSize: 14, color: "rgba(255,255,255,0.75)", fontFamily: "Inter_400Regular" },
+  avatarLargeText: { fontSize: 36, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
+  profileName: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", marginBottom: 4 },
+  profileEmail: { fontSize: 14, color: "rgba(74,48,112,0.75)", fontFamily: "Inter_400Regular" },
 
   body: { marginTop: -36, paddingHorizontal: 20, gap: 16 },
 
   statsRow: { flexDirection: "row", gap: 12 },
   statCard: { flex: 1, alignItems: "center" },
-  statNum: { fontSize: 22, fontWeight: "800", color: "#6C4DFF", fontFamily: "Inter_700Bold" },
-  statLabel: { fontSize: 11, color: "#8B7BAB", fontFamily: "Inter_500Medium", marginTop: 2 },
+  statNum: { fontSize: 22, fontWeight: "800", color: "#A78BFA", fontFamily: "Inter_700Bold" },
+  statLabel: { fontSize: 11, color: "#A090B8", fontFamily: "Inter_500Medium", marginTop: 2 },
 
-  premiumBanner: { borderRadius: 22, paddingVertical: 16, paddingHorizontal: 20, flexDirection: "row", justifyContent: "space-between", alignItems: "center", shadowColor: "#6C4DFF", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 14, elevation: 8 },
+  premiumBanner: { borderRadius: 22, paddingVertical: 16, paddingHorizontal: 20, flexDirection: "row", justifyContent: "space-between", alignItems: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 14, elevation: 8 },
   premiumLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
   premiumTitle: { fontSize: 15, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
   premiumSub: { fontSize: 12, color: "rgba(255,255,255,0.8)", fontFamily: "Inter_400Regular" },
@@ -164,9 +164,9 @@ const styles = StyleSheet.create({
 
   settingsList: { borderRadius: 24, overflow: "hidden" },
   settingItem: { flexDirection: "row", alignItems: "center", paddingHorizontal: 18, paddingVertical: 15, gap: 14 },
-  settingItemBorder: { borderBottomWidth: 1, borderBottomColor: "#EDE9FF" },
+  settingItemBorder: { borderBottomWidth: 1, borderBottomColor: "#F0E8FF" },
   settingIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
-  settingLabel: { flex: 1, fontSize: 15, color: "#1A0F2E", fontFamily: "Inter_500Medium", fontWeight: "500" },
+  settingLabel: { flex: 1, fontSize: 15, color: "#4A3070", fontFamily: "Inter_500Medium", fontWeight: "500" },
 
   logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 20, paddingVertical: 16, borderWidth: 1, borderColor: "#FFD6D6", shadowColor: "#FF6B6B", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 3 },
   logoutText: { fontSize: 15, fontWeight: "700", color: "#FF6B6B", fontFamily: "Inter_700Bold" },

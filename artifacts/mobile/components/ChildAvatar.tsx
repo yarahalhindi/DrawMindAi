@@ -31,7 +31,7 @@ export function ChildAvatar({
             borderRadius: size / 2,
             backgroundColor: avatarColor,
             borderWidth: selected ? 3 : 0,
-            borderColor: selected ? "#6C4DFF" : "transparent",
+            borderColor: selected ? "#A78BFA" : "transparent",
           },
         ]}
       >
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 12,
-    color: "#1A0F2E",
+    color: "#4A3070",
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
     maxWidth: 64,
