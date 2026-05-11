@@ -113,17 +113,6 @@ export default function HomeScreen() {
   const { userName, children, drawings, getChildEmotionSummary } = useApp();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
 
-  const happyPct =
-    drawings.length > 0
-      ? Math.round(
-          (drawings.filter((d) =>
-            d.mainEmotion.toLowerCase().includes("happy")
-          ).length /
-            drawings.length) *
-            100
-        )
-      : 0;
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -159,23 +148,6 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* Inline Stats */}
-          <View style={styles.greetingStats}>
-            <View style={styles.greetingStat}>
-              <Text style={styles.greetingStatNum}>{children.length}</Text>
-              <Text style={styles.greetingStatLabel}>Children</Text>
-            </View>
-            <View style={styles.greetingStatDivider} />
-            <View style={styles.greetingStat}>
-              <Text style={styles.greetingStatNum}>{drawings.length}</Text>
-              <Text style={styles.greetingStatLabel}>Drawings</Text>
-            </View>
-            <View style={styles.greetingStatDivider} />
-            <View style={styles.greetingStat}>
-              <Text style={styles.greetingStatNum}>{happyPct}%</Text>
-              <Text style={styles.greetingStatLabel}>Happy</Text>
-            </View>
-          </View>
         </LinearGradient>
 
         {/* ── My Children ── */}
@@ -312,7 +284,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
   },
   greetingLeft: { flex: 1 },
   greeting: {
@@ -398,6 +369,7 @@ const styles = StyleSheet.create({
     color: "#1A0F2E",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.3,
+    marginBottom: 20,
   },
   seeAll: {
     fontSize: 13,
