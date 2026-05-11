@@ -51,6 +51,7 @@ interface AppContextType {
   login: (email: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   addChild: (child: Omit<Child, "id">) => Promise<void>;
+  updateChild: (childId: string, updates: Omit<Child, "id">) => Promise<void>;
   addDrawing: (drawing: Omit<Drawing, "id" | "date">) => Promise<void>;
   getChildDrawings: (childId: string) => Drawing[];
   getChildEmotionSummary: (childId: string) => string;
@@ -286,6 +287,17 @@ export function AppProvider({ children: reactChildren }: { children: React.React
     [children]
   );
 
+  const updateChild = useCallback(
+    async (childId: string, updates: Omit<Child, "id">) => {
+      const updated = children.map((c) =>
+        c.id === childId ? { ...c, ...updates } : c
+      );
+      setChildren(updated);
+      await AsyncStorage.setItem(STORAGE_KEY_CHILDREN, JSON.stringify(updated));
+    },
+    [children]
+  );
+
   const addDrawing = useCallback(
     async (drawing: Omit<Drawing, "id" | "date">) => {
       const newDrawing: Drawing = {
@@ -332,6 +344,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
         login,
         logout,
         addChild,
+        updateChild,
         addDrawing,
         getChildDrawings,
         getChildEmotionSummary,
