@@ -2,9 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
+  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -13,11 +14,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
+import Svg, {
+  Defs,
+  LinearGradient as SvgGradient,
+  Path,
+  Stop,
+} from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ChildAvatar } from "@/components/ChildAvatar";
 import { useApp } from "@/context/AppContext";
-import type { Child, Drawing } from "@/context/AppContext";
+import type { Child } from "@/context/AppContext";
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -26,341 +31,216 @@ function getGreeting() {
   return "Good Evening";
 }
 
-const QUICK_ACTIONS = [
-  {
-    icon: "cloud-upload",
-    label: "Upload Drawing",
-    sub: "Analyze a photo",
-    gradientStart: "#6C4DFF",
-    gradientEnd: "#9B7FFF",
-    route: "/choose-child" as const,
-  },
-  {
-    icon: "brush",
-    label: "Draw",
-    sub: "Create & analyze",
-    gradientStart: "#B89CFF",
-    gradientEnd: "#8B6BFF",
-    route: "/choose-child" as const,
-  },
-];
+// ── Sparkline chart ───────────────────────────────────────────────────────────
+function SparklineChart({
+  emotionData,
+  activityData,
+  width,
+}: {
+  emotionData: number[];
+  activityData: number[];
+  width: number;
+}) {
+  const H = 100;
+  const pad = 10;
 
-// ── Mini sparkline chart using react-native-svg ──────────────────────────────
-function SparklineChart({ emotionData, activityData }: { emotionData: number[]; activityData: number[] }) {
-  const W = 300;
-  const H = 90;
-  const pad = 8;
-
-  function makeSmooth(data: number[]): string {
-    const xs = data.map((_, i) => pad + (i / (data.length - 1)) * (W - pad * 2));
-    const ys = data.map((v) => H - pad - (v / 100) * (H - pad * 2));
-    if (xs.length < 2) return "";
+  function smooth(data: number[]): string {
+    const xs = data.map(
+      (_, i) => pad + (i / (data.length - 1)) * (width - pad * 2)
+    );
+    const ys = data.map(
+      (v) => H - pad - (v / 100) * (H - pad * 2)
+    );
     let d = `M ${xs[0]} ${ys[0]}`;
     for (let i = 1; i < xs.length; i++) {
-      const cpx = (xs[i - 1] + xs[i]) / 2;
-      d += ` C ${cpx} ${ys[i - 1]}, ${cpx} ${ys[i]}, ${xs[i]} ${ys[i]}`;
+      const cx = (xs[i - 1] + xs[i]) / 2;
+      d += ` C ${cx} ${ys[i - 1]}, ${cx} ${ys[i]}, ${xs[i]} ${ys[i]}`;
     }
     return d;
   }
 
-  function makeArea(data: number[]): string {
-    const xs = data.map((_, i) => pad + (i / (data.length - 1)) * (W - pad * 2));
-    const ys = data.map((v) => H - pad - (v / 100) * (H - pad * 2));
-    let d = `M ${xs[0]} ${H}`;
-    d += ` L ${xs[0]} ${ys[0]}`;
+  function area(data: number[]): string {
+    const xs = data.map(
+      (_, i) => pad + (i / (data.length - 1)) * (width - pad * 2)
+    );
+    const ys = data.map(
+      (v) => H - pad - (v / 100) * (H - pad * 2)
+    );
+    let d = `M ${xs[0]} ${H} L ${xs[0]} ${ys[0]}`;
     for (let i = 1; i < xs.length; i++) {
-      const cpx = (xs[i - 1] + xs[i]) / 2;
-      d += ` C ${cpx} ${ys[i - 1]}, ${cpx} ${ys[i]}, ${xs[i]} ${ys[i]}`;
+      const cx = (xs[i - 1] + xs[i]) / 2;
+      d += ` C ${cx} ${ys[i - 1]}, ${cx} ${ys[i]}, ${xs[i]} ${ys[i]}`;
     }
     d += ` L ${xs[xs.length - 1]} ${H} Z`;
     return d;
   }
 
   return (
-    <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg width={width} height={H} viewBox={`0 0 ${width} ${H}`}>
       <Defs>
-        <SvgGradient id="emotionGrad" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#FF6B9D" stopOpacity="0.25" />
+        <SvgGradient id="eGrad" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#FF6B9D" stopOpacity="0.3" />
           <Stop offset="1" stopColor="#FF6B9D" stopOpacity="0" />
         </SvgGradient>
-        <SvgGradient id="activityGrad" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#6C4DFF" stopOpacity="0.2" />
+        <SvgGradient id="aGrad" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#6C4DFF" stopOpacity="0.25" />
           <Stop offset="1" stopColor="#6C4DFF" stopOpacity="0" />
         </SvgGradient>
       </Defs>
-      {/* Area fills */}
-      <Path d={makeArea(emotionData)} fill="url(#emotionGrad)" />
-      <Path d={makeArea(activityData)} fill="url(#activityGrad)" />
-      {/* Lines */}
-      <Path d={makeSmooth(activityData)} fill="none" stroke="#6C4DFF" strokeWidth="2.5" strokeLinecap="round" />
-      <Path d={makeSmooth(emotionData)} fill="none" stroke="#FF6B9D" strokeWidth="2.5" strokeLinecap="round" />
+      <Path d={area(activityData)} fill="url(#aGrad)" />
+      <Path d={area(emotionData)} fill="url(#eGrad)" />
+      <Path
+        d={smooth(activityData)}
+        fill="none"
+        stroke="#6C4DFF"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <Path
+        d={smooth(emotionData)}
+        fill="none"
+        stroke="#FF6B9D"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
     </Svg>
   );
 }
 
-// ── Expanded child summary card ───────────────────────────────────────────────
-function ExpandedChildCard({
+// ── Child square card ─────────────────────────────────────────────────────────
+function ChildCard({
   child,
-  drawings,
-  visible,
-}: {
-  child: Child;
-  drawings: Drawing[];
-  visible: boolean;
-}) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(-12)).current;
-  const scale = useRef(new Animated.Value(0.97)).current;
-
-  useEffect(() => {
-    if (visible) {
-      Animated.parallel([
-        Animated.spring(opacity, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 4 }),
-        Animated.spring(translateY, { toValue: 0, useNativeDriver: true, speed: 20, bounciness: 5 }),
-        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 5 }),
-      ]).start();
-    } else {
-      Animated.parallel([
-        Animated.timing(opacity, { toValue: 0, duration: 150, useNativeDriver: true }),
-        Animated.timing(translateY, { toValue: -12, duration: 150, useNativeDriver: true }),
-        Animated.timing(scale, { toValue: 0.97, duration: 150, useNativeDriver: true }),
-      ]).start();
-    }
-  }, [visible]);
-
-  const childDrawings = drawings.filter((d) => d.childId === child.id);
-  const happyCount = childDrawings.filter((d) => d.mainEmotion.toLowerCase().includes("happy")).length;
-  const sadCount = childDrawings.filter((d) => d.mainEmotion.toLowerCase().includes("sad")).length;
-  const happyPct = childDrawings.length > 0 ? Math.round((happyCount / childDrawings.length) * 100) : 75;
-  const sadPct = childDrawings.length > 0 ? Math.round((sadCount / childDrawings.length) * 100) : 25;
-
-  // Generate mock weekly sparkline data seeded per child
-  const seed = child.name.charCodeAt(0);
-  const emotionData = [60, 55, 70, 65, 80, 75, happyPct || 78].map(
-    (v, i) => Math.min(100, Math.max(20, v + ((seed * (i + 1)) % 15) - 7))
-  );
-  const activityData = [40, 55, 48, 62, 58, 70, 65].map(
-    (v, i) => Math.min(100, Math.max(10, v + ((seed * (i + 2)) % 12) - 5))
-  );
-
-  const insightText = `${child.name} is showing consistent improvement in emotional expression this week.`;
-
-  const latestDrawing = childDrawings[0] ?? null;
-  const drawingPaths: Array<{ d: string; color: string; strokeWidth: number }> =
-    latestDrawing ? (() => { try { return JSON.parse(latestDrawing.pathsJson); } catch { return []; } })() : [];
-
-  const imgFade = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (visible) {
-      Animated.timing(imgFade, { toValue: 1, duration: 500, delay: 250, useNativeDriver: true }).start();
-    } else {
-      imgFade.setValue(0);
-    }
-  }, [visible]);
-
-  if (!visible) return null;
-
-  return (
-    <Animated.View
-      style={[
-        styles.expandedCard,
-        { opacity, transform: [{ translateY }, { scale }] },
-      ]}
-    >
-      {/* Header */}
-      <View style={styles.expandedHeader}>
-        <ChildAvatar
-          name={child.name}
-          initials={child.initials}
-          avatarColor={child.avatarColor}
-          size={44}
-          showName={false}
-        />
-        <View style={styles.expandedHeaderText}>
-          <Text style={styles.expandedTitle}>{child.name}'s Progress</Text>
-          <Text style={styles.expandedSub}>Weekly emotional overview</Text>
-        </View>
-        <View style={[styles.expandedBadge, { backgroundColor: child.avatarColor + "22" }]}>
-          <Text style={[styles.expandedBadgeText, { color: child.avatarColor }]}>
-            Age {child.age}
-          </Text>
-        </View>
-      </View>
-
-      {/* Chart */}
-      <View style={styles.chartContainer}>
-        <View style={styles.chartLegend}>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: "#FF6B9D" }]} />
-            <Text style={styles.legendLabel}>Emotion</Text>
-          </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: "#6C4DFF" }]} />
-            <Text style={styles.legendLabel}>Activity</Text>
-          </View>
-        </View>
-        <View style={styles.chartInner}>
-          <SparklineChart emotionData={emotionData} activityData={activityData} />
-          <View style={styles.chartXLabels}>
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-              <Text key={d} style={styles.chartXLabel}>{d}</Text>
-            ))}
-          </View>
-        </View>
-      </View>
-
-      {/* AI Insight */}
-      <View style={styles.insightCard}>
-        <View style={styles.insightIconWrap}>
-          <Ionicons name="sparkles" size={16} color="#6C4DFF" />
-        </View>
-        <Text style={styles.insightText}>{insightText}</Text>
-      </View>
-
-      {/* ── Latest Drawing Preview ── */}
-      <Animated.View style={[styles.drawingPreviewWrap, { opacity: imgFade }]}>
-        <TouchableOpacity
-          activeOpacity={0.88}
-          onPress={() => {
-            if (latestDrawing) {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push({ pathname: "/drawing-detail", params: { drawingId: latestDrawing.id } });
-            }
-          }}
-        >
-          <LinearGradient
-            colors={["#EDE9FF", "#DDD6FF"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.drawingPreviewCanvas}
-          >
-            {drawingPaths.length > 0 ? (
-              <Svg width="100%" height="160" viewBox="0 0 300 160">
-                {drawingPaths.map((path, i) => (
-                  <Path
-                    key={i}
-                    d={path.d}
-                    stroke={path.color}
-                    strokeWidth={path.strokeWidth}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                ))}
-              </Svg>
-            ) : (
-              /* Decorative placeholder when no paths saved */
-              <Svg width="100%" height="160" viewBox="0 0 300 160">
-                <Defs>
-                  <SvgGradient id="ph1" x1="0" y1="0" x2="1" y2="1">
-                    <Stop offset="0" stopColor="#B89CFF" stopOpacity="0.5" />
-                    <Stop offset="1" stopColor="#6C4DFF" stopOpacity="0.3" />
-                  </SvgGradient>
-                </Defs>
-                {/* Decorative abstract drawing suggestion */}
-                <Path d="M 30 110 C 60 70, 90 130, 130 80 C 160 40, 190 100, 230 60 C 250 45, 270 75, 285 55"
-                  stroke="#6C4DFF" strokeWidth="3" fill="none" strokeLinecap="round" strokeOpacity="0.55" />
-                <Path d="M 20 130 C 50 110, 80 140, 110 120 C 140 100, 170 125, 200 110 C 230 95, 260 115, 285 105"
-                  stroke="#FF6B9D" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeOpacity="0.45" />
-                <Path d="M 40 90 C 65 55, 100 95, 135 60 C 165 30, 195 80, 230 50"
-                  stroke="#B89CFF" strokeWidth="2" fill="none" strokeLinecap="round" strokeOpacity="0.5" />
-                {/* Sun circle */}
-                <Path d="M 250 35 m -18 0 a 18 18 0 1 0 36 0 a 18 18 0 1 0 -36 0"
-                  fill="url(#ph1)" />
-                {/* Ground */}
-                <Path d="M 20 145 Q 80 135 150 142 Q 220 150 285 140"
-                  stroke="#9B7FFF" strokeWidth="2" fill="none" strokeLinecap="round" strokeOpacity="0.35" />
-              </Svg>
-            )}
-
-          </LinearGradient>
-
-          {/* Caption row */}
-          <View style={styles.drawingCaption}>
-            <View style={styles.drawingCaptionLeft}>
-              <Ionicons name="image-outline" size={14} color="#8B7BAB" />
-              <Text style={styles.drawingCaptionText}>Latest Drawing</Text>
-            </View>
-            {latestDrawing && (
-              <Text style={styles.drawingCaptionDate}>{latestDrawing.date}</Text>
-            )}
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
-
-      {/* ── Single Upload Button ── */}
-      <TouchableOpacity
-        style={styles.uploadBtn}
-        activeOpacity={0.85}
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          router.push("/choose-child");
-        }}
-      >
-        <LinearGradient
-          colors={["#6C4DFF", "#9B7FFF"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.uploadBtnGrad}
-        >
-          <View style={styles.uploadBtnIcon}>
-            <Ionicons name="cloud-upload-outline" size={20} color="#fff" />
-          </View>
-          <Text style={styles.uploadBtnLabel}>Upload Drawing</Text>
-          <Ionicons name="arrow-forward" size={18} color="rgba(255,255,255,0.7)" />
-        </LinearGradient>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
-
-// ── Quick Action Card ─────────────────────────────────────────────────────────
-function QuickActionCard({
-  icon,
-  label,
-  sub,
-  gradientStart,
-  gradientEnd,
+  selected,
   onPress,
 }: {
-  icon: string;
-  label: string;
-  sub: string;
-  gradientStart: string;
-  gradientEnd: string;
+  child: Child;
+  selected: boolean;
   onPress: () => void;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () =>
-    Animated.spring(scale, { toValue: 0.93, useNativeDriver: true, speed: 40, bounciness: 4 }).start();
+    Animated.spring(scale, {
+      toValue: 0.93,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 3,
+    }).start();
 
   const handlePressOut = () =>
-    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 40, bounciness: 6 }).start();
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 6,
+    }).start();
 
   return (
-    <Animated.View style={[styles.qaWrap, { transform: [{ scale }] }]}>
+    <Animated.View style={{ transform: [{ scale }] }}>
       <Pressable
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          onPress();
-        }}
+        onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={styles.qaPressable}
+      >
+        <View
+          style={[
+            styles.childCard,
+            selected && {
+              borderColor: child.avatarColor,
+              borderWidth: 2.5,
+              shadowColor: child.avatarColor,
+              shadowOpacity: 0.28,
+              shadowRadius: 12,
+              elevation: 8,
+            },
+          ]}
+        >
+          {/* Avatar square */}
+          <LinearGradient
+            colors={[child.avatarColor + "CC", child.avatarColor]}
+            style={styles.childCardAvatar}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            {/* Decorative orb */}
+            <View style={styles.childCardOrb} />
+            <Text style={styles.childCardInitials}>{child.initials}</Text>
+          </LinearGradient>
+          <Text
+            style={[
+              styles.childCardName,
+              selected && { color: "#6C4DFF", fontFamily: "Inter_700Bold" },
+            ]}
+            numberOfLines={1}
+          >
+            {child.name}
+          </Text>
+          <Text style={styles.childCardAge}>Age {child.age}</Text>
+          {selected && <View style={styles.childCardDot} />}
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+// ── Action button ─────────────────────────────────────────────────────────────
+function ActionBtn({
+  icon,
+  label,
+  sub,
+  colors,
+  onPress,
+}: {
+  icon: string;
+  label: string;
+  sub: string;
+  colors: [string, string, ...string[]];
+  onPress: () => void;
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  return (
+    <Animated.View style={[styles.actionBtnWrap, { transform: [{ scale }] }]}>
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          onPress();
+        }}
+        onPressIn={() =>
+          Animated.spring(scale, {
+            toValue: 0.95,
+            useNativeDriver: true,
+            speed: 40,
+            bounciness: 3,
+          }).start()
+        }
+        onPressOut={() =>
+          Animated.spring(scale, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 40,
+            bounciness: 6,
+          }).start()
+        }
       >
         <LinearGradient
-          colors={[gradientStart, gradientEnd]}
+          colors={colors}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.qaGradient}
+          style={styles.actionBtn}
         >
-          <View style={styles.qaOrb} />
-          <View style={styles.qaIconWrap}>
-            <Ionicons name={icon as any} size={26} color="rgba(255,255,255,0.95)" />
+          <View style={styles.actionIconWrap}>
+            <Ionicons name={icon as any} size={24} color="#fff" />
           </View>
-          <Text style={styles.qaLabel}>{label}</Text>
-          <Text style={styles.qaSub}>{sub}</Text>
+          <View style={styles.actionTextWrap}>
+            <Text style={styles.actionLabel}>{label}</Text>
+            <Text style={styles.actionSub}>{sub}</Text>
+          </View>
+          <Ionicons
+            name="arrow-forward"
+            size={18}
+            color="rgba(255,255,255,0.6)"
+          />
         </LinearGradient>
       </Pressable>
     </Animated.View>
@@ -370,14 +250,103 @@ function QuickActionCard({
 // ── Home Screen ───────────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { userName, children, drawings, getChildEmotionSummary } = useApp();
+  const { userName, children, drawings } = useApp();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 
-  function handleChildPress(childId: string) {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setSelectedChildId((prev) => (prev === childId ? null : childId));
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selectedChild: Child | undefined = useMemo(() => {
+    const target = selectedId ?? children[0]?.id;
+    return children.find((c) => c.id === target);
+  }, [selectedId, children]);
+
+  const childDrawings = useMemo(
+    () => drawings.filter((d) => d.childId === selectedChild?.id),
+    [drawings, selectedChild]
+  );
+
+  const happyPct = useMemo(() => {
+    if (!childDrawings.length) return 78;
+    const happy = childDrawings.filter((d) =>
+      d.mainEmotion.toLowerCase().includes("happy")
+    ).length;
+    return Math.round((happy / childDrawings.length) * 100);
+  }, [childDrawings]);
+
+  const seed = selectedChild ? selectedChild.name.charCodeAt(0) : 65;
+  const emotionData = [60, 55, 70, 65, 80, 75, happyPct].map((v, i) =>
+    Math.min(100, Math.max(20, v + ((seed * (i + 1)) % 15) - 7))
+  );
+  const activityData = [40, 55, 48, 62, 58, 70, 65].map((v, i) =>
+    Math.min(100, Math.max(10, v + ((seed * (i + 2)) % 12) - 5))
+  );
+
+  // Stagger fade-in animations for sections
+  const fadeGreet = useRef(new Animated.Value(0)).current;
+  const fadeChildren = useRef(new Animated.Value(0)).current;
+  const fadeChart = useRef(new Animated.Value(0)).current;
+  const fadeInsight = useRef(new Animated.Value(0)).current;
+  const fadeActions = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.stagger(90, [
+      Animated.timing(fadeGreet, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeChildren, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeChart, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeInsight, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeActions, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  // Re-animate chart when child changes
+  const chartFade = useRef(new Animated.Value(1)).current;
+  const prevId = useRef<string | null>(null);
+  useEffect(() => {
+    if (prevId.current !== null && prevId.current !== selectedId) {
+      Animated.sequence([
+        Animated.timing(chartFade, {
+          toValue: 0,
+          duration: 120,
+          useNativeDriver: true,
+        }),
+        Animated.timing(chartFade, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+    prevId.current = selectedId;
+  }, [selectedId]);
+
+  function handleChildPress(id: string) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedId(id);
   }
+
+  const insightText = selectedChild
+    ? `${selectedChild.name} is showing consistent improvement in emotional expression this week.`
+    : "Select a child to view their emotional insights.";
 
   return (
     <View style={styles.container}>
@@ -388,33 +357,51 @@ export default function HomeScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Greeting Card ── */}
-        <LinearGradient
-          colors={["#5535E8", "#6C4DFF", "#9B7FFF"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.greetingCard}
+        {/* ── Welcome Card ── */}
+        <Animated.View
+          style={{ opacity: fadeGreet, transform: [{ translateY: fadeGreet.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }}
         >
-          <View style={styles.greetingOrb1} />
-          <View style={styles.greetingOrb2} />
-          <View style={styles.greetingTop}>
-            <View style={styles.greetingLeft}>
-              <Text style={styles.greeting}>{getGreeting()},</Text>
-              <Text style={styles.greetingName}>{userName}</Text>
-              <Text style={styles.greetingSubtitle}>
-                Track your children's emotions
+          <LinearGradient
+            colors={["#4A30E0", "#6C4DFF", "#9B7FFF"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.welcomeCard}
+          >
+            <View style={styles.welcomeOrb1} />
+            <View style={styles.welcomeOrb2} />
+
+            <View style={styles.welcomeLeft}>
+              <Text style={styles.welcomeGreeting}>{getGreeting()}</Text>
+              <Text style={styles.welcomeName}>{userName}</Text>
+              <Text style={styles.welcomeSub}>
+                Let's check in on your children today
               </Text>
+
+              <View style={styles.welcomeChip}>
+                <View style={styles.welcomeChipDot} />
+                <Text style={styles.welcomeChipText}>
+                  {children.length} children · {drawings.length} drawings
+                </Text>
+              </View>
             </View>
-            <View style={styles.avatarCircle}>
-              <Text style={styles.avatarText}>
-                {userName.slice(0, 1).toUpperCase()}
-              </Text>
+
+            <View style={styles.welcomeRight}>
+              <Image
+                source={require("@/assets/images/mascot.png")}
+                style={styles.mascotImage}
+                resizeMode="contain"
+              />
             </View>
-          </View>
-        </LinearGradient>
+          </LinearGradient>
+        </Animated.View>
 
         {/* ── My Children ── */}
-        <View style={styles.section}>
+        <Animated.View
+          style={{
+            opacity: fadeChildren,
+            transform: [{ translateY: fadeChildren.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }],
+          }}
+        >
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>My Children</Text>
             <TouchableOpacity
@@ -430,87 +417,179 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.childrenRow}
           >
-            {children.map((child) => {
-              const isSelected = selectedChildId === child.id;
-              return (
-                <TouchableOpacity
-                  key={child.id}
-                  onPress={() => handleChildPress(child.id)}
-                  style={styles.childItem}
-                  activeOpacity={0.85}
-                >
-                  <View
-                    style={[
-                      styles.childGlowRing,
-                      {
-                        borderColor: isSelected ? child.avatarColor : child.avatarColor + "55",
-                        borderWidth: isSelected ? 3 : 2.5,
-                        backgroundColor: isSelected ? child.avatarColor + "18" : "transparent",
-                      },
-                    ]}
-                  >
-                    <ChildAvatar
-                      name={child.name}
-                      initials={child.initials}
-                      avatarColor={child.avatarColor}
-                      size={68}
-                      showName={false}
-                    />
-                  </View>
-                  <Text style={[styles.childName, isSelected && { color: "#6C4DFF" }]}>
-                    {child.name}
-                  </Text>
-                  <Text style={styles.emotionBadge}>
-                    {getChildEmotionSummary(child.id)}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-
-            {/* Add Child */}
-            <TouchableOpacity
-              onPress={() => router.push("/add-child")}
-              style={styles.childItem}
-              activeOpacity={0.8}
-            >
-              <View style={styles.addChildRing}>
-                <View style={styles.addChildCircle}>
-                  <Ionicons name="add" size={28} color="#6C4DFF" />
-                </View>
-              </View>
-              <Text style={styles.childName}>Add Child</Text>
-              <Text style={styles.emotionBadgePlaceholder}> </Text>
-            </TouchableOpacity>
-          </ScrollView>
-
-          {/* Expanded summary cards — one per child, toggled */}
-          {children.map((child) => (
-            <ExpandedChildCard
-              key={child.id}
-              child={child}
-              drawings={drawings}
-              visible={selectedChildId === child.id}
-            />
-          ))}
-        </View>
-
-        {/* ── Recent Drawings ── */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitleStandalone}>Recent Drawings</Text>
-          <View style={styles.qaGrid}>
-            {QUICK_ACTIONS.map((action) => (
-              <QuickActionCard
-                key={action.label}
-                icon={action.icon}
-                label={action.label}
-                sub={action.sub}
-                gradientStart={action.gradientStart}
-                gradientEnd={action.gradientEnd}
-                onPress={() => router.push(action.route as any)}
+            {children.map((child) => (
+              <ChildCard
+                key={child.id}
+                child={child}
+                selected={(selectedId ?? children[0]?.id) === child.id}
+                onPress={() => handleChildPress(child.id)}
               />
             ))}
+
+            {/* Add Child card */}
+            <TouchableOpacity
+              onPress={() => router.push("/add-child")}
+              activeOpacity={0.8}
+            >
+              <View style={styles.addChildCard}>
+                <View style={styles.addChildIcon}>
+                  <Ionicons name="add" size={26} color="#6C4DFF" />
+                </View>
+                <Text style={styles.addChildLabel}>Add{"\n"}Child</Text>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
+        </Animated.View>
+
+        {/* ── Progress Chart ── */}
+        {selectedChild && (
+          <Animated.View
+            style={{
+              opacity: Animated.multiply(fadeChart, chartFade),
+              transform: [{ translateY: fadeChart.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }],
+            }}
+          >
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                {selectedChild.name}'s Progress
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/child-analysis",
+                    params: { childId: selectedChild.id },
+                  })
+                }
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={styles.seeAll}>See all</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.chartCard}>
+              {/* Legend */}
+              <View style={styles.chartLegend}>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: "#FF6B9D" }]} />
+                  <Text style={styles.legendLabel}>Emotion</Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: "#6C4DFF" }]} />
+                  <Text style={styles.legendLabel}>Activity</Text>
+                </View>
+              </View>
+
+              {/* Chart */}
+              <View style={styles.chartBody}>
+                <SparklineChart
+                  emotionData={emotionData}
+                  activityData={activityData}
+                  width={320}
+                />
+                <View style={styles.chartDayRow}>
+                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                    (d) => (
+                      <Text key={d} style={styles.chartDay}>
+                        {d}
+                      </Text>
+                    )
+                  )}
+                </View>
+              </View>
+
+              {/* Mini stat chips */}
+              <View style={styles.chartStats}>
+                <View style={styles.chartStatChip}>
+                  <Text style={styles.chartStatNum}>{happyPct}%</Text>
+                  <Text style={styles.chartStatLabel}>Happy</Text>
+                </View>
+                <View style={[styles.chartStatChip, styles.chartStatChipMid]}>
+                  <Text style={styles.chartStatNum}>
+                    {childDrawings.length}
+                  </Text>
+                  <Text style={styles.chartStatLabel}>Drawings</Text>
+                </View>
+                <View style={styles.chartStatChip}>
+                  <Text style={styles.chartStatNum}>{selectedChild.age}y</Text>
+                  <Text style={styles.chartStatLabel}>Age</Text>
+                </View>
+              </View>
+            </View>
+          </Animated.View>
+        )}
+
+        {/* ── AI Insight ── */}
+        {selectedChild && (
+          <Animated.View
+            style={{
+              opacity: Animated.multiply(fadeInsight, chartFade),
+              transform: [{ translateY: fadeInsight.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }],
+            }}
+          >
+            <View style={styles.insightCard}>
+              <LinearGradient
+                colors={["#EDE9FF", "#F5F1FF"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.insightGradient}
+              >
+                <View style={styles.insightHeader}>
+                  <View style={styles.insightIconWrap}>
+                    <Ionicons name="sparkles" size={16} color="#6C4DFF" />
+                  </View>
+                  <Text style={styles.insightHeading}>AI Insight</Text>
+                </View>
+                <Text style={styles.insightText}>{insightText}</Text>
+                <TouchableOpacity
+                  style={styles.insightLink}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/child-analysis",
+                      params: { childId: selectedChild.id },
+                    })
+                  }
+                >
+                  <Text style={styles.insightLinkText}>
+                    View full analysis
+                  </Text>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={13}
+                    color="#6C4DFF"
+                  />
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
+          </Animated.View>
+        )}
+
+        {/* ── Action Buttons ── */}
+        <Animated.View
+          style={{
+            opacity: fadeActions,
+            transform: [{ translateY: fadeActions.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }],
+          }}
+        >
+          <Text style={[styles.sectionTitle, { marginBottom: 14 }]}>
+            Recent Drawings
+          </Text>
+          <View style={styles.actionsCol}>
+            <ActionBtn
+              icon="cloud-upload-outline"
+              label="Upload Drawing"
+              sub="Analyze from your camera roll"
+              colors={["#5535E8", "#6C4DFF", "#9B7FFF"]}
+              onPress={() => router.push("/choose-child")}
+            />
+            <ActionBtn
+              icon="brush-outline"
+              label="Draw"
+              sub="Create a new drawing to analyze"
+              colors={["#C084FC", "#A855F7", "#7C3AED"]}
+              onPress={() => router.push("/choose-child")}
+            />
           </View>
-        </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );
@@ -520,85 +599,101 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#F5F1FF" },
   scroll: { paddingHorizontal: 20 },
 
-  /* ── Greeting ── */
-  greetingCard: {
+  /* ── Welcome Card ── */
+  welcomeCard: {
     borderRadius: 32,
-    padding: 24,
-    marginBottom: 24,
+    paddingTop: 24,
+    paddingBottom: 0,
+    paddingHorizontal: 24,
+    marginBottom: 28,
     overflow: "hidden",
+    flexDirection: "row",
+    alignItems: "flex-end",
     shadowColor: "#6C4DFF",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.38,
     shadowRadius: 28,
     elevation: 14,
+    minHeight: 160,
   },
-  greetingOrb1: {
+  welcomeOrb1: {
     position: "absolute",
-    width: 160,
-    height: 160,
-    borderRadius: 80,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
     backgroundColor: "rgba(255,255,255,0.07)",
-    top: -40,
+    top: -50,
     right: -30,
   },
-  greetingOrb2: {
+  welcomeOrb2: {
     position: "absolute",
     width: 100,
     height: 100,
     borderRadius: 50,
     backgroundColor: "rgba(255,255,255,0.05)",
-    bottom: -20,
-    left: 20,
+    bottom: 10,
+    left: -20,
   },
-  greetingTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  greetingLeft: { flex: 1 },
-  greeting: {
-    fontSize: 14,
-    color: "rgba(255,255,255,0.75)",
+  welcomeLeft: { flex: 1, paddingBottom: 24 },
+  welcomeGreeting: {
+    fontSize: 13,
+    color: "rgba(255,255,255,0.72)",
     fontFamily: "Inter_400Regular",
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
   },
-  greetingName: {
-    fontSize: 28,
+  welcomeName: {
+    fontSize: 26,
     fontWeight: "800",
     color: "#FFFFFF",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.5,
-    marginVertical: 3,
+    marginTop: 3,
+    marginBottom: 5,
   },
-  greetingSubtitle: {
-    fontSize: 13,
-    color: "rgba(255,255,255,0.65)",
+  welcomeSub: {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.62)",
     fontFamily: "Inter_400Regular",
+    lineHeight: 18,
+    marginBottom: 14,
   },
-  avatarCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "rgba(255,255,255,0.22)",
+  welcomeChip: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.35)",
+    gap: 7,
+    backgroundColor: "rgba(255,255,255,0.16)",
+    alignSelf: "flex-start",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
-  avatarText: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#fff",
-    fontFamily: "Inter_700Bold",
+  welcomeChipDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#A8EDBB",
+  },
+  welcomeChipText: {
+    fontSize: 11,
+    color: "rgba(255,255,255,0.88)",
+    fontFamily: "Inter_500Medium",
+  },
+  welcomeRight: {
+    width: 110,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  mascotImage: {
+    width: 110,
+    height: 130,
   },
 
-  /* ── Section ── */
-  section: { marginBottom: 28 },
+  /* ── Section header ── */
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 14,
   },
   sectionTitle: {
     fontSize: 19,
@@ -607,14 +702,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.3,
   },
-  sectionTitleStandalone: {
-    fontSize: 19,
-    fontWeight: "700",
-    color: "#1A0F2E",
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.3,
-    marginBottom: 20,
-  },
   seeAll: {
     fontSize: 13,
     color: "#6C4DFF",
@@ -622,263 +709,248 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  /* ── My Children ── */
+  /* ── Children row ── */
   childrenRow: {
-    gap: 20,
-    paddingHorizontal: 4,
+    gap: 12,
     paddingBottom: 6,
-    alignItems: "flex-start",
+    paddingHorizontal: 2,
+    marginBottom: 28,
   },
-  childItem: { alignItems: "center", gap: 6 },
-  childGlowRing: {
-    borderRadius: 40,
-    padding: 3,
+  childCard: {
+    width: 90,
+    borderRadius: 22,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    paddingBottom: 12,
+    overflow: "hidden",
+    shadowColor: "#6C4DFF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.09,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 2,
+    borderColor: "transparent",
   },
-  childName: {
+  childCardAvatar: {
+    width: "100%",
+    height: 74,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    marginBottom: 10,
+  },
+  childCardOrb: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "rgba(255,255,255,0.18)",
+    top: -15,
+    right: -15,
+  },
+  childCardInitials: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#fff",
+    fontFamily: "Inter_700Bold",
+  },
+  childCardName: {
     fontSize: 12,
     fontWeight: "600",
     color: "#1A0F2E",
     fontFamily: "Inter_600SemiBold",
     textAlign: "center",
+    paddingHorizontal: 6,
   },
-  emotionBadge: {
-    fontSize: 11,
-    color: "#6C4DFF",
-    fontFamily: "Inter_600SemiBold",
-    fontWeight: "600",
+  childCardAge: {
+    fontSize: 10,
+    color: "#B0A0CC",
+    fontFamily: "Inter_400Regular",
+    marginTop: 2,
   },
-  emotionBadgePlaceholder: { fontSize: 11, color: "transparent" },
-  addChildRing: {
-    borderRadius: 40,
-    borderWidth: 2.5,
-    borderColor: "#DDD6FF",
+  childCardDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#6C4DFF",
+    marginTop: 6,
+  },
+  addChildCard: {
+    width: 90,
+    height: 130,
+    borderRadius: 22,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    shadowColor: "#6C4DFF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: "#E8E2FF",
     borderStyle: "dashed",
-    padding: 3,
   },
-  addChildCircle: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+  addChildIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     backgroundColor: "#EDE9FF",
     alignItems: "center",
     justifyContent: "center",
   },
-
-  /* ── Expanded Child Card ── */
-  expandedCard: {
-    marginTop: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 28,
-    padding: 20,
-    shadowColor: "#6C4DFF",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.13,
-    shadowRadius: 24,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: "rgba(108,77,255,0.08)",
-  },
-  expandedHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 18,
-  },
-  expandedHeaderText: { flex: 1 },
-  expandedTitle: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#1A0F2E",
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.3,
-  },
-  expandedSub: {
-    fontSize: 12,
-    color: "#8B7BAB",
-    fontFamily: "Inter_400Regular",
-    marginTop: 2,
-  },
-  expandedBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 20,
-  },
-  expandedBadgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-    fontFamily: "Inter_700Bold",
-  },
-
-  /* Chart */
-  chartContainer: {
-    backgroundColor: "#F9F7FF",
-    borderRadius: 20,
-    padding: 14,
-    marginBottom: 14,
-  },
-  chartLegend: {
-    flexDirection: "row",
-    gap: 16,
-    marginBottom: 10,
-  },
-  legendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
-  legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendLabel: {
+  addChildLabel: {
     fontSize: 11,
     color: "#8B7BAB",
     fontFamily: "Inter_500Medium",
+    textAlign: "center",
+    lineHeight: 16,
   },
-  chartInner: { alignItems: "center" },
-  chartXLabels: {
+
+  /* ── Chart card ── */
+  chartCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 28,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#6C4DFF",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.09,
+    shadowRadius: 20,
+    elevation: 6,
+  },
+  chartLegend: {
+    flexDirection: "row",
+    gap: 18,
+    marginBottom: 12,
+  },
+  legendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
+  legendDot: { width: 9, height: 9, borderRadius: 5 },
+  legendLabel: {
+    fontSize: 12,
+    color: "#8B7BAB",
+    fontFamily: "Inter_500Medium",
+  },
+  chartBody: { alignItems: "center" },
+  chartDayRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 300,
-    marginTop: 4,
+    width: 320,
+    marginTop: 6,
+    paddingHorizontal: 4,
   },
-  chartXLabel: {
+  chartDay: {
     fontSize: 9,
-    color: "#B0A0CC",
+    color: "#C0B0D8",
     fontFamily: "Inter_400Regular",
     textAlign: "center",
     flex: 1,
   },
-
-  /* AI Insight */
-  insightCard: {
+  chartStats: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-    backgroundColor: "#F0EDFF",
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 14,
+    marginTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#F0ECFF",
+    paddingTop: 14,
+  },
+  chartStatChip: {
+    flex: 1,
+    alignItems: "center",
+  },
+  chartStatChipMid: {
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: "#F0ECFF",
+  },
+  chartStatNum: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#6C4DFF",
+    fontFamily: "Inter_700Bold",
+  },
+  chartStatLabel: {
+    fontSize: 11,
+    color: "#B0A0CC",
+    fontFamily: "Inter_400Regular",
+    marginTop: 2,
+  },
+
+  /* ── Insight card ── */
+  insightCard: {
+    borderRadius: 24,
+    overflow: "hidden",
+    marginBottom: 28,
+    shadowColor: "#6C4DFF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  insightGradient: {
+    borderRadius: 24,
+    padding: 18,
+    borderWidth: 1.5,
+    borderColor: "rgba(108,77,255,0.12)",
+  },
+  insightHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 10,
   },
   insightIconWrap: {
-    width: 28,
-    height: 28,
+    width: 30,
+    height: 30,
     borderRadius: 10,
     backgroundColor: "#E4DDFF",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 1,
+  },
+  insightHeading: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#3D2A6E",
+    fontFamily: "Inter_700Bold",
   },
   insightText: {
-    flex: 1,
     fontSize: 13,
-    color: "#3D2A6E",
-    fontFamily: "Inter_400Regular",
-    lineHeight: 19,
-  },
-
-
-  /* Drawing Preview */
-  drawingPreviewWrap: {
-    marginBottom: 14,
-  },
-  drawingPreviewCanvas: {
-    borderRadius: 20,
-    height: 160,
-    overflow: "hidden",
-    borderWidth: 1.5,
-    borderColor: "rgba(108,77,255,0.15)",
-    shadowColor: "#6C4DFF",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 5,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  drawingCaption: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 10,
-    marginBottom: 4,
-    paddingHorizontal: 2,
-  },
-  drawingCaptionLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  drawingCaptionText: {
-    fontSize: 13,
-    fontWeight: "600",
     color: "#5A4A7A",
-    fontFamily: "Inter_600SemiBold",
-  },
-  drawingCaptionDate: {
-    fontSize: 12,
-    color: "#B0A0CC",
     fontFamily: "Inter_400Regular",
+    lineHeight: 20,
+    marginBottom: 12,
   },
-
-  /* Single Upload Button */
-  uploadBtn: {
-    borderRadius: 18,
-    overflow: "hidden",
-    marginTop: 4,
-    shadowColor: "#6C4DFF",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.28,
-    shadowRadius: 14,
-    elevation: 8,
-  },
-  uploadBtnGrad: {
+  insightLink: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 18,
+    gap: 3,
+    alignSelf: "flex-start",
   },
-  uploadBtnIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  uploadBtnLabel: {
-    flex: 1,
-    fontSize: 15,
+  insightLinkText: {
+    fontSize: 12,
     fontWeight: "700",
-    color: "#fff",
+    color: "#6C4DFF",
     fontFamily: "Inter_700Bold",
-    letterSpacing: -0.2,
   },
 
-  /* ── Quick Actions Grid ── */
-  qaGrid: { flexDirection: "row", flexWrap: "wrap", gap: 14 },
-  qaWrap: { width: "47.5%" },
-  qaPressable: { borderRadius: 24, overflow: "hidden" },
-  qaGradient: {
-    borderRadius: 24,
-    paddingVertical: 24,
+  /* ── Action buttons ── */
+  actionsCol: { gap: 12 },
+  actionBtnWrap: { borderRadius: 22, overflow: "hidden" },
+  actionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    paddingVertical: 18,
     paddingHorizontal: 20,
-    gap: 10,
-    overflow: "hidden",
+    borderRadius: 22,
     shadowColor: "#6C4DFF",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.28,
     shadowRadius: 18,
     elevation: 10,
-    minHeight: 130,
-    justifyContent: "flex-end",
   },
-  qaOrb: {
-    position: "absolute",
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "rgba(255,255,255,0.12)",
-    top: -20,
-    right: -20,
-  },
-  qaIconWrap: {
+  actionIconWrap: {
     width: 44,
     height: 44,
     borderRadius: 14,
@@ -886,18 +958,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
+    borderColor: "rgba(255,255,255,0.25)",
   },
-  qaLabel: {
-    fontSize: 14,
+  actionTextWrap: { flex: 1 },
+  actionLabel: {
+    fontSize: 15,
     fontWeight: "700",
     color: "#FFFFFF",
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.2,
   },
-  qaSub: {
+  actionSub: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(255,255,255,0.68)",
     fontFamily: "Inter_400Regular",
+    marginTop: 2,
   },
 });
