@@ -46,10 +46,13 @@ interface AppContextType {
   isLoggedIn: boolean;
   userName: string;
   userEmail: string;
+  userPhone: string;
+  userRelationship: string;
   children: Child[];
   drawings: Drawing[];
   login: (email: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserProfile: (name: string, email: string, phone: string, relationship: string) => Promise<void>;
   addChild: (child: Omit<Child, "id">) => Promise<void>;
   updateChild: (childId: string, updates: Omit<Child, "id">) => Promise<void>;
   addDrawing: (drawing: Omit<Drawing, "id" | "date">) => Promise<void>;
@@ -221,6 +224,8 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("Anna");
   const [userEmail, setUserEmail] = useState("");
+  const [userPhone, setUserPhone] = useState("");
+  const [userRelationship, setUserRelationship] = useState("");
   const [children, setChildren] = useState<Child[]>(MOCK_CHILDREN);
   const [drawings, setDrawings] = useState<Drawing[]>(MOCK_DRAWINGS);
 
@@ -237,6 +242,8 @@ export function AppProvider({ children: reactChildren }: { children: React.React
           setIsLoggedIn(parsed.isLoggedIn);
           setUserName(parsed.userName || "Anna");
           setUserEmail(parsed.userEmail || "");
+          setUserPhone(parsed.userPhone || "");
+          setUserRelationship(parsed.userRelationship || "");
         }
         if (childrenData) {
           const parsed = JSON.parse(childrenData);
@@ -266,7 +273,21 @@ export function AppProvider({ children: reactChildren }: { children: React.React
     setIsLoggedIn(false);
     setUserName("Anna");
     setUserEmail("");
+    setUserPhone("");
+    setUserRelationship("");
   }, []);
+
+  const updateUserProfile = useCallback(
+    async (name: string, email: string, phone: string, relationship: string) => {
+      const data = { isLoggedIn: true, userName: name, userEmail: email, userPhone: phone, userRelationship: relationship };
+      await AsyncStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(data));
+      setUserName(name);
+      setUserEmail(email);
+      setUserPhone(phone);
+      setUserRelationship(relationship);
+    },
+    []
+  );
 
   const addChild = useCallback(
     async (child: Omit<Child, "id">) => {
@@ -339,10 +360,13 @@ export function AppProvider({ children: reactChildren }: { children: React.React
         isLoggedIn,
         userName,
         userEmail,
+        userPhone,
+        userRelationship,
         children,
         drawings,
         login,
         logout,
+        updateUserProfile,
         addChild,
         updateChild,
         addDrawing,

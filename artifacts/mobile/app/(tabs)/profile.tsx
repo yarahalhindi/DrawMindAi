@@ -18,7 +18,7 @@ import { useApp } from "@/context/AppContext";
 
 // ── Settings items with their routes ─────────────────────────────────────────
 const SETTINGS = [
-  { icon: "person-outline",            label: "Edit Profile",         color: "#6C4DFF", route: "/choose-child?mode=edit" },
+  { icon: "person-outline",            label: "Edit Profile",         color: "#6C4DFF", route: "/edit-profile" },
   { icon: "people-outline",            label: "Update Child Info",    color: "#B89CFF", route: "/choose-child?mode=edit" },
   { icon: "chatbubble-outline",        label: "Support & Feedback",   color: "#48CAE4", route: "/support-feedback" },
   { icon: "language-outline",          label: "Language",             color: "#90BE6D", route: "/language" },

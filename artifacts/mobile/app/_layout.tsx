@@ -35,6 +35,7 @@ function RootLayoutNav() {
       <Stack.Screen name="edit-child" />
       <Stack.Screen name="add-drawing" />
       <Stack.Screen name="drawing-detail" />
+      <Stack.Screen name="edit-profile" />
       <Stack.Screen name="support-feedback" />
       <Stack.Screen name="language" />
       <Stack.Screen name="change-password" />
