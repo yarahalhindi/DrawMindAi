@@ -7,7 +7,6 @@ import {
   Animated,
   KeyboardAvoidingView,
   Modal,
-  PanResponder,
   Platform,
   ScrollView,
   StyleSheet,
@@ -16,22 +15,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "@/context/AppContext";
 import type { EmotionScore } from "@/context/AppContext";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-interface Point    { x: number; y: number }
-interface DrawPath { points: Point[]; color: string; width: number; isEraser: boolean }
-type Tool = "pencil" | "brush" | "eraser";
-
-function pointsToSvgD(points: Point[]): string {
-  if (points.length < 2) return "";
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 1; i < points.length; i++) d += ` L ${points[i].x} ${points[i].y}`;
-  return d;
-}
+import { DrawingArea } from "@/components/DrawingArea";
+import type { DrawPath, Tool } from "@/components/DrawingArea";
 
 // ── Color palette ─────────────────────────────────────────────────────────────
 const COLORS = [
@@ -189,20 +177,10 @@ export default function DrawingCanvas() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const botPad = Platform.OS === "web" ? 34 : insets.bottom;
 
-  // Drawing state
-  const [paths, setPaths]                   = useState<DrawPath[]>([]);
-  const [currentPathPoints, setCurrentPath] = useState<Point[]>([]);
-  const [activeTool, setActiveTool]         = useState<Tool>("pencil");
-  const [selectedColor, setSelectedColor]   = useState("#4A3070");
-
-  // Refs so PanResponder (created once) always reads fresh values
-  const currentPointsRef  = useRef<Point[]>([]);
-  const activeToolRef     = useRef<Tool>("pencil");
-  const selectedColorRef  = useRef("#4A3070");
-
-  // Keep refs in sync with state
-  React.useEffect(() => { activeToolRef.current = activeTool; }, [activeTool]);
-  React.useEffect(() => { selectedColorRef.current = selectedColor; }, [selectedColor]);
+  // Drawing state — managed here, rendered by DrawingArea
+  const [paths, setPaths]         = useState<DrawPath[]>([]);
+  const [activeTool, setActiveTool]   = useState<Tool>("pencil");
+  const [selectedColor, setSelectedColor] = useState("#4A3070");
 
   // Parent notes
   const [description, setDescription] = useState("");
@@ -224,46 +202,9 @@ export default function DrawingCanvas() {
     }).start();
   }, [hasPaths, analyzeBtnScale]);
 
-  // PanResponder created ONCE — reads tool/color from refs so it's always current
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder:         () => true,
-      onStartShouldSetPanResponderCapture:  () => true,
-      onMoveShouldSetPanResponder:          () => true,
-      onMoveShouldSetPanResponderCapture:   () => true,
-      onPanResponderGrant: (evt) => {
-        const pt = { x: evt.nativeEvent.locationX, y: evt.nativeEvent.locationY };
-        currentPointsRef.current = [pt];
-        setCurrentPath([pt]);
-      },
-      onPanResponderMove: (evt) => {
-        const pt = { x: evt.nativeEvent.locationX, y: evt.nativeEvent.locationY };
-        currentPointsRef.current = [...currentPointsRef.current, pt];
-        setCurrentPath((prev) => [...prev, pt]);
-      },
-      onPanResponderRelease: () => {
-        if (currentPointsRef.current.length > 0) {
-          const tool   = activeToolRef.current;
-          const color  = selectedColorRef.current;
-          const bw     = tool === "brush" ? 10 : tool === "eraser" ? 24 : 4;
-          const sc     = tool === "eraser" ? "#FFFFFF" : color;
-          const stroke: DrawPath = {
-            points:   [...currentPointsRef.current],
-            color:    sc,
-            width:    bw,
-            isEraser: tool === "eraser",
-          };
-          setPaths((prev) => [...prev, stroke]);
-          currentPointsRef.current = [];
-          setCurrentPath([]);
-        }
-      },
-      onPanResponderTerminate: () => {
-        currentPointsRef.current = [];
-        setCurrentPath([]);
-      },
-    })
-  ).current;
+  function handleStrokeComplete(stroke: DrawPath) {
+    setPaths((prev) => [...prev, stroke]);
+  }
 
   function handleUndo() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -273,7 +214,6 @@ export default function DrawingCanvas() {
   function handleClear() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setPaths([]);
-    setCurrentPath([]);
   }
 
   function selectTool(tool: Tool) {
@@ -342,34 +282,14 @@ export default function DrawingCanvas() {
 
       {/* ── Canvas ── */}
       <View style={styles.canvasWrap}>
-        <View style={styles.canvas} {...panResponder.panHandlers}>
-          {/* pointerEvents="none" prevents SVG from swallowing touch/mouse events */}
-          <View style={StyleSheet.absoluteFill} pointerEvents="none">
-            <Svg style={StyleSheet.absoluteFill}>
-              {paths.map((p, idx) => (
-                <Path
-                  key={idx}
-                  d={pointsToSvgD(p.points)}
-                  stroke={p.color}
-                  strokeWidth={p.width}
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              ))}
-              {currentPathPoints.length > 0 && (
-                <Path
-                  d={pointsToSvgD(currentPathPoints)}
-                  stroke={activeTool === "eraser" ? "#FFFFFF" : selectedColor}
-                  strokeWidth={activeTool === "brush" ? 10 : activeTool === "eraser" ? 24 : 4}
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              )}
-            </Svg>
-          </View>
-          {!hasPaths && currentPathPoints.length === 0 && (
+        <View style={styles.canvas}>
+          <DrawingArea
+            paths={paths}
+            activeTool={activeTool}
+            selectedColor={selectedColor}
+            onStrokeComplete={handleStrokeComplete}
+          />
+          {!hasPaths && (
             <View style={styles.canvasHint} pointerEvents="none">
               <Ionicons name="brush-outline" size={42} color="#E0D9FF" />
               <Text style={styles.canvasHintText}>Draw here</Text>
