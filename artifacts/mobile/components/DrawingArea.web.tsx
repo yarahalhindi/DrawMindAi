@@ -31,6 +31,7 @@ export function DrawingArea({
   onStrokeComplete,
   canvasWidth,
   canvasHeight,
+  onCanvasReady,
 }: DrawingAreaProps) {
   const canvasRef  = useRef<HTMLCanvasElement>(null);
 
@@ -82,6 +83,15 @@ export function DrawingArea({
       rafId.current = requestAnimationFrame(loop);
     }
     rafId.current = requestAnimationFrame(loop);
+
+    // Expose snapshot function to parent (web only)
+    if (onCanvasReady) {
+      onCanvasReady(() => {
+        try { return canvasRef.current?.toDataURL("image/png") ?? null; }
+        catch { return null; }
+      });
+    }
+
     return () => cancelAnimationFrame(rafId.current);
   }, []); // runs once — reads only refs
 

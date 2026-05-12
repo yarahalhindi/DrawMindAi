@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
+  Image,
   Platform,
   ScrollView,
   StyleSheet,
@@ -24,6 +25,15 @@ export default function DrawingDetailScreen() {
 
   const drawing = drawings.find((d) => d.id === drawingId);
   const child = children.find((c) => c.id === drawing?.childId);
+
+  // Extract canvas snapshot or uploaded image from pathsJson
+  let thumbUri: string | null = null;
+  if (drawing?.pathsJson) {
+    try {
+      const parsed = JSON.parse(drawing.pathsJson);
+      if (parsed?.imageUri) thumbUri = parsed.imageUri;
+    } catch { /* ignore */ }
+  }
 
   if (!drawing || !child) {
     return (
@@ -59,14 +69,24 @@ export default function DrawingDetailScreen() {
 
         {/* Large Drawing Preview */}
         <GlassCard style={styles.drawingCard} padding={0}>
-          <LinearGradient
-            colors={[child.avatarColor + "22", child.avatarColor + "55"]}
-            style={styles.drawingFrame}
-          >
-            <Ionicons name="brush" size={64} color={child.avatarColor} />
-            <Text style={styles.drawingLabel}>{child.name}'s Drawing</Text>
-            <Text style={styles.drawingDate}>{drawing.date}</Text>
-          </LinearGradient>
+          {thumbUri ? (
+            <View style={styles.drawingFrame}>
+              <Image source={{ uri: thumbUri }} style={styles.drawingThumb} resizeMode="contain" />
+              <View style={styles.drawingOverlayRow}>
+                <Text style={styles.drawingLabel}>{child.name}'s Drawing</Text>
+                <Text style={styles.drawingDate}>{drawing.date}</Text>
+              </View>
+            </View>
+          ) : (
+            <LinearGradient
+              colors={[child.avatarColor + "22", child.avatarColor + "55"]}
+              style={styles.drawingFrame}
+            >
+              <Ionicons name="brush" size={64} color={child.avatarColor} />
+              <Text style={styles.drawingLabel}>{child.name}'s Drawing</Text>
+              <Text style={styles.drawingDate}>{drawing.date}</Text>
+            </LinearGradient>
+          )}
         </GlassCard>
 
         {/* Main Emotion Badge */}
@@ -216,6 +236,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 24,
     gap: 8,
+    overflow: "hidden",
+  },
+  drawingThumb: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 24,
+  },
+  drawingOverlayRow: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(255,255,255,0.88)",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignItems: "center",
+    gap: 2,
   },
   drawingLabel: {
     fontSize: 16,

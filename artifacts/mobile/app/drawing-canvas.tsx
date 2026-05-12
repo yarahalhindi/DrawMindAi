@@ -232,18 +232,24 @@ export default function DrawingCanvas() {
     setActiveTool(tool);
   }
 
+  // Canvas snapshot function exposed by DrawingArea.web.tsx via onCanvasReady
+  const getSnapshotRef = useRef<(() => string | null) | null>(null);
+
   async function handleAnalyze() {
     if (!hasPaths || isAnalyzing) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setIsAnalyzing(true);
 
+    // Capture canvas snapshot before async work (web only; native gets null)
+    const imageUri = getSnapshotRef.current?.() ?? null;
+
     // Simulate AI processing time
     await new Promise((r) => setTimeout(r, 2400));
 
-    const analysis   = generateMockAnalysis(description, paths.length);
-    const pathsJson  = JSON.stringify(paths);
+    const analysis  = generateMockAnalysis(description, paths.length);
+    const pathsJson = JSON.stringify({ paths, imageUri });
 
-    await addDrawing({
+    const drawingId = await addDrawing({
       childId: childId ?? "",
       pathsJson,
       ...analysis,
@@ -251,10 +257,10 @@ export default function DrawingCanvas() {
 
     setIsAnalyzing(false);
 
-    // Navigate to the analysis result screen
+    // Navigate with the exact drawing ID so analysis-result shows the right drawing
     router.replace({
       pathname: "/analysis-result",
-      params: { childId: childId ?? "" },
+      params: { childId: childId ?? "", drawingId },
     });
   }
 
@@ -301,6 +307,7 @@ export default function DrawingCanvas() {
             onStrokeComplete={handleStrokeComplete}
             canvasWidth={canvasSize.w}
             canvasHeight={canvasSize.h}
+            onCanvasReady={(fn) => { getSnapshotRef.current = fn; }}
           />
           {!hasPaths && (
             <View style={styles.canvasHint} pointerEvents="none">

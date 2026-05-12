@@ -13,6 +13,8 @@ export interface DrawingAreaProps {
   onStrokeComplete: (stroke: DrawPath) => void;
   canvasWidth?: number;
   canvasHeight?: number;
+  /** Called once on mount with a function that returns a PNG data URI snapshot */
+  onCanvasReady?: (getSnapshot: () => string | null) => void;
 }
 
 function toolWidth(tool: Tool)            { return tool === "brush" ? 10 : tool === "eraser" ? 28 : 4; }

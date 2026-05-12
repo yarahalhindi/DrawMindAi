@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -60,6 +61,15 @@ function DrawingCard({ drawing, child, index }: { drawing: Drawing; child: Child
   const mountAnim  = useRef(new Animated.Value(0)).current;
   const cfg = ecfg(drawing.mainEmotion);
 
+  // Extract canvas snapshot or uploaded image from pathsJson
+  let thumbUri: string | null = null;
+  if (drawing.pathsJson) {
+    try {
+      const parsed = JSON.parse(drawing.pathsJson);
+      if (parsed?.imageUri) thumbUri = parsed.imageUri;
+    } catch { /* ignore */ }
+  }
+
   useEffect(() => {
     Animated.timing(mountAnim, { toValue: 1, duration: 350, delay: index * 80, useNativeDriver: true }).start();
   }, []);
@@ -81,14 +91,23 @@ function DrawingCard({ drawing, child, index }: { drawing: Drawing; child: Child
     <Animated.View style={[dc.card, { opacity: mountAnim, transform: [{ translateY: mountAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }]}>
       {/* Top row */}
       <View style={dc.top}>
-        <LinearGradient colors={[child.avatarColor + "33", child.avatarColor + "18"]} style={dc.thumb} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <View style={[dc.thumbIcon, { backgroundColor: child.avatarColor + "22" }]}>
-            <Ionicons name="brush" size={26} color={child.avatarColor} />
+        {thumbUri ? (
+          <View style={dc.thumb}>
+            <Image source={{ uri: thumbUri }} style={dc.thumbImg} resizeMode="cover" />
+            <View style={dc.dateBadge}>
+              <Text style={dc.dateBadgeText}>{new Date(drawing.date).toLocaleDateString("en", { month: "short", day: "numeric" })}</Text>
+            </View>
           </View>
-          <View style={dc.dateBadge}>
-            <Text style={dc.dateBadgeText}>{new Date(drawing.date).toLocaleDateString("en", { month: "short", day: "numeric" })}</Text>
-          </View>
-        </LinearGradient>
+        ) : (
+          <LinearGradient colors={[child.avatarColor + "33", child.avatarColor + "18"]} style={dc.thumb} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <View style={[dc.thumbIcon, { backgroundColor: child.avatarColor + "22" }]}>
+              <Ionicons name="brush" size={26} color={child.avatarColor} />
+            </View>
+            <View style={dc.dateBadge}>
+              <Text style={dc.dateBadgeText}>{new Date(drawing.date).toLocaleDateString("en", { month: "short", day: "numeric" })}</Text>
+            </View>
+          </LinearGradient>
+        )}
 
         <View style={dc.info}>
           <Text style={dc.title}>Drawing #{String(index + 1).padStart(2, "0")}</Text>
@@ -168,7 +187,8 @@ function DrawingCard({ drawing, child, index }: { drawing: Drawing; child: Child
 const dc = StyleSheet.create({
   card:     { backgroundColor: "#FFF5F8", borderRadius: 24, padding: 16, marginBottom: 14, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.09, shadowRadius: 18, elevation: 6 },
   top:      { flexDirection: "row", gap: 14 },
-  thumb:    { width: 100, height: 108, borderRadius: 18, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  thumb:    { width: 100, height: 108, borderRadius: 18, alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative" },
+  thumbImg:  { width: 100, height: 108, borderRadius: 18 },
   thumbIcon: { width: 50, height: 50, borderRadius: 15, alignItems: "center", justifyContent: "center" },
   dateBadge: { position: "absolute", bottom: 8, left: 8, right: 8, backgroundColor: "rgba(255,255,255,0.88)", borderRadius: 10, paddingVertical: 3, alignItems: "center" },
   dateBadgeText: { fontSize: 10, color: "#5A4A7A", fontFamily: "Inter_600SemiBold", fontWeight: "600" },

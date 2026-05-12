@@ -55,7 +55,7 @@ interface AppContextType {
   updateUserProfile: (name: string, email: string, phone: string, relationship: string) => Promise<void>;
   addChild: (child: Omit<Child, "id">) => Promise<void>;
   updateChild: (childId: string, updates: Omit<Child, "id">) => Promise<void>;
-  addDrawing: (drawing: Omit<Drawing, "id" | "date">) => Promise<void>;
+  addDrawing: (drawing: Omit<Drawing, "id" | "date">) => Promise<string>;
   getChildDrawings: (childId: string) => Drawing[];
   getChildEmotionSummary: (childId: string) => string;
 }
@@ -323,7 +323,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   );
 
   const addDrawing = useCallback(
-    async (drawing: Omit<Drawing, "id" | "date">) => {
+    async (drawing: Omit<Drawing, "id" | "date">): Promise<string> => {
       const newDrawing: Drawing = {
         ...drawing,
         id: `drawing-${Date.now()}${Math.random().toString(36).substr(2, 5)}`,
@@ -335,6 +335,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
         STORAGE_KEY_DRAWINGS,
         JSON.stringify(updated)
       );
+      return newDrawing.id;
     },
     [drawings]
   );

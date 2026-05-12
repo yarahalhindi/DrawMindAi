@@ -70,15 +70,18 @@ const cs = StyleSheet.create({
 
 export default function AnalysisResultScreen() {
   const insets = useSafeAreaInsets();
-  const { childId } = useLocalSearchParams<{ childId: string }>();
+  const { childId, drawingId } = useLocalSearchParams<{ childId: string; drawingId: string }>();
   const { drawings, children } = useApp();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const botPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   const child = children.find((c) => c.id === childId);
-  const latestDrawing = drawings.find((d) => d.childId === childId);
+  // Prefer exact drawingId; fall back to newest drawing for this child
+  const latestDrawing = drawingId
+    ? drawings.find((d) => d.id === drawingId)
+    : drawings.find((d) => d.childId === childId);
 
-  // Try to extract an uploaded image URI from pathsJson
+  // Extract image URI from pathsJson (canvas snapshot or uploaded photo)
   let uploadedImageUri: string | null = null;
   if (latestDrawing?.pathsJson) {
     try {
