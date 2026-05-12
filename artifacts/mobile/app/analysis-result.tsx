@@ -78,6 +78,17 @@ export default function AnalysisResultScreen() {
   const child = children.find((c) => c.id === childId);
   const latestDrawing = drawings.find((d) => d.childId === childId);
 
+  // Try to extract an uploaded image URI from pathsJson
+  let uploadedImageUri: string | null = null;
+  if (latestDrawing?.pathsJson) {
+    try {
+      const parsed = JSON.parse(latestDrawing.pathsJson);
+      if (parsed?.imageUri) uploadedImageUri = parsed.imageUri;
+    } catch {
+      uploadedImageUri = null;
+    }
+  }
+
   if (!latestDrawing) {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
@@ -128,20 +139,32 @@ export default function AnalysisResultScreen() {
         {/* Drawing Preview */}
         <GlassCard style={styles.drawingPreview} padding={24}>
           <View style={styles.thumbOuter}>
-            <LinearGradient
-              colors={["#F0E8FF", "#EAD4F5"]}
-              style={styles.thumbInner}
-            >
+            {uploadedImageUri ? (
               <Image
-                source={require("@/assets/images/whale-magnifier.png")}
-                style={styles.whaleThumb}
-                resizeMode="contain"
+                source={{ uri: uploadedImageUri }}
+                style={styles.thumbImage}
+                resizeMode="cover"
               />
-            </LinearGradient>
+            ) : (
+              <LinearGradient
+                colors={["#F0E8FF", "#EAD4F5"]}
+                style={styles.thumbInner}
+              >
+                <Image
+                  source={require("@/assets/images/whale-magnifier.png")}
+                  style={styles.whaleThumb}
+                  resizeMode="contain"
+                />
+              </LinearGradient>
+            )}
           </View>
           <View style={styles.previewInfo}>
             <Text style={styles.previewChildName}>{child?.name}'s Drawing</Text>
             <Text style={styles.previewDate}>{latestDrawing.date}</Text>
+            <View style={styles.savedBadge}>
+              <Ionicons name="checkmark-circle" size={13} color="#6C4DFF" />
+              <Text style={styles.savedBadgeText}>Saved to profile</Text>
+            </View>
           </View>
         </GlassCard>
 
@@ -274,17 +297,32 @@ export default function AnalysisResultScreen() {
           </View>
         </GlassCard>
 
-        {/* Done Button */}
-        <TouchableOpacity onPress={() => router.replace("/(tabs)")}>
-          <LinearGradient
-            colors={["#C4A8F5", "#F0A8C8"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.doneBtn}
+        {/* Action Buttons */}
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.viewProfileBtn}
+            onPress={() => router.replace({ pathname: "/child-analysis", params: { childId: childId! } })}
+            activeOpacity={0.85}
           >
-            <Text style={styles.doneBtnText}>Done</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <Ionicons name="person-outline" size={18} color="#6C4DFF" />
+            <Text style={styles.viewProfileText}>View Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPress={() => router.replace("/(tabs)")}
+            activeOpacity={0.88}
+          >
+            <LinearGradient
+              colors={["#C4A8F5", "#F0A8C8"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.doneBtn}
+            >
+              <Ionicons name="home-outline" size={18} color="#fff" />
+              <Text style={styles.doneBtnText}>Done</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -293,7 +331,7 @@ export default function AnalysisResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FDF8F5",
+    backgroundColor: "#F5EFFE",
   },
   scroll: {
     paddingHorizontal: 20,
@@ -350,11 +388,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  thumbImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+  },
   whaleThumb: {
     width: 72,
     height: 72,
   },
-  previewInfo: { gap: 4 },
+  previewInfo: { gap: 4, flex: 1 },
+  savedBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 2,
+  },
+  savedBadgeText: {
+    fontSize: 11,
+    color: "#6C4DFF",
+    fontFamily: "Inter_600SemiBold",
+    fontWeight: "600",
+  },
   previewChildName: {
     fontSize: 16,
     fontWeight: "700",
@@ -496,10 +551,41 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontFamily: "Inter_400Regular",
   },
+  actionRow: {
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "stretch",
+  },
+  viewProfileBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    borderRadius: 30,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1.5,
+    borderColor: "#C4B0FF",
+    shadowColor: "#C4A8F5",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  viewProfileText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#6C4DFF",
+    fontFamily: "Inter_700Bold",
+  },
   doneBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
     borderRadius: 30,
     paddingVertical: 16,
-    alignItems: "center",
     shadowColor: "#C4A8F5",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
@@ -507,7 +593,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   doneBtnText: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "700",
     color: "#fff",
     fontFamily: "Inter_700Bold",

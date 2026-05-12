@@ -279,9 +279,9 @@ export default function DrawingCanvas() {
 
     setIsAnalyzing(false);
 
-    // Navigate to the child's profile so they can see the saved result
+    // Navigate to the analysis result screen
     router.replace({
-      pathname: "/child-analysis",
+      pathname: "/analysis-result",
       params: { childId: childId ?? "" },
     });
   }

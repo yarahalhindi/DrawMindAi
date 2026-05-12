@@ -201,9 +201,9 @@ export default function AddDrawingScreen() {
     setAnalyzing(false);
     shimmerAnim.stopAnimation();
 
-    // Navigate to the drawings tab (child profile) to see the result
+    // Navigate to the analysis result screen
     router.replace({
-      pathname: "/child-analysis",
+      pathname: "/analysis-result",
       params: { childId: childId! },
     });
   }
