@@ -192,7 +192,7 @@ export default function AddDrawingScreen() {
 
     const analysis = generateMockAnalysis(description || "neutral drawing");
 
-    await addDrawing({
+    const drawingId = await addDrawing({
       childId: childId!,
       pathsJson: JSON.stringify({ imageUri }),
       ...analysis,
@@ -201,10 +201,10 @@ export default function AddDrawingScreen() {
     setAnalyzing(false);
     shimmerAnim.stopAnimation();
 
-    // Navigate to the analysis result screen
+    // Navigate with the exact drawing ID so analysis-result resolves immediately
     router.replace({
       pathname: "/analysis-result",
-      params: { childId: childId! },
+      params: { childId: childId!, drawingId },
     });
   }
 

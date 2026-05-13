@@ -125,7 +125,7 @@ export default function DrawingDetailScreen() {
         >
           <View style={styles.summaryHeader}>
             <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} style={styles.summaryIcon}>
-              <Ionicons name="brain" size={16} color="#fff" />
+              <Ionicons name="sparkles" size={16} color="#fff" />
             </LinearGradient>
             <Text style={styles.summaryTitle}>AI Summary</Text>
           </View>

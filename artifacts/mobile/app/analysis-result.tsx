@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Platform,
   ScrollView,
@@ -75,11 +76,30 @@ export default function AnalysisResultScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const botPad = Platform.OS === "web" ? 34 : insets.bottom;
 
+  // Resolve the drawing reactively — state update from addDrawing() may not
+  // have committed to context yet when this screen first mounts (race condition).
+  type Drawing = (typeof drawings)[number];
+  const [latestDrawing, setLatestDrawing] = useState<Drawing | null>(null);
+  const [timedOut, setTimedOut]           = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const found = drawingId
+      ? drawings.find((d) => d.id === drawingId)
+      : drawings.find((d) => d.childId === childId);
+    if (found) {
+      setLatestDrawing(found);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    }
+  }, [drawings, drawingId, childId]);
+
+  // Safety timeout — stop waiting after 6 seconds
+  useEffect(() => {
+    timerRef.current = setTimeout(() => setTimedOut(true), 6000);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
   const child = children.find((c) => c.id === childId);
-  // Prefer exact drawingId; fall back to newest drawing for this child
-  const latestDrawing = drawingId
-    ? drawings.find((d) => d.id === drawingId)
-    : drawings.find((d) => d.childId === childId);
 
   // Extract image URI from pathsJson (canvas snapshot or uploaded photo)
   let uploadedImageUri: string | null = null;
@@ -90,6 +110,20 @@ export default function AnalysisResultScreen() {
     } catch {
       uploadedImageUri = null;
     }
+  }
+
+  // Show spinner while waiting for context to update
+  if (!latestDrawing && !timedOut) {
+    return (
+      <View style={[styles.container, styles.centerContent, { paddingTop: topPad }]}>
+        <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} style={styles.loadingIcon}>
+          <Ionicons name="sparkles" size={28} color="#fff" />
+        </LinearGradient>
+        <Text style={styles.loadingTitle}>Preparing your analysis…</Text>
+        <Text style={styles.loadingSubtitle}>Almost ready</Text>
+        <ActivityIndicator size="large" color="#A78BFA" style={{ marginTop: 8 }} />
+      </View>
+    );
   }
 
   if (!latestDrawing) {
@@ -222,7 +256,7 @@ export default function AnalysisResultScreen() {
               colors={["#C4A8F5", "#F0A8C8"]}
               style={styles.summaryIcon}
             >
-              <Ionicons name="brain" size={18} color="#fff" />
+              <Ionicons name="sparkles" size={18} color="#fff" />
             </LinearGradient>
             <Text style={styles.summaryTitle}>AI Summary</Text>
           </View>
@@ -335,6 +369,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5EFFE",
+  },
+  centerContent: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  loadingIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  loadingTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#4A3070",
+    fontFamily: "Inter_700Bold",
+  },
+  loadingSubtitle: {
+    fontSize: 14,
+    color: "#A090B8",
+    fontFamily: "Inter_400Regular",
   },
   scroll: {
     paddingHorizontal: 20,
