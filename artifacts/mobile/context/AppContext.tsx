@@ -9,6 +9,10 @@ import React, {
 } from "react";
 
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
+import {
+  loadDrawingsFromFirestore,
+  saveDrawingToFirestore,
+} from "@/lib/firestore";
 
 export interface Child {
   id: string;
@@ -33,6 +37,7 @@ export interface Drawing {
   childId: string;
   date: string;
   pathsJson: string;
+  imageUri?: string;
   mainEmotion: string;
   confidence: number;
   emotions: EmotionScore[];
@@ -225,6 +230,7 @@ const STORAGE_KEY_DRAWINGS = "@drawmind_drawings";
 
 export function AppProvider({ children: reactChildren }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [userName, setUserName] = useState("Anna");
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
@@ -234,15 +240,26 @@ export function AppProvider({ children: reactChildren }: { children: React.React
 
   useEffect(() => {
     if (isFirebaseConfigured) {
-      const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
         if (user) {
           setIsLoggedIn(true);
+          setUserId(user.uid);
           setUserName(
             user.displayName || user.email?.split("@")[0] || "Parent"
           );
           setUserEmail(user.email ?? "");
+          // Load drawings saved under this parent's account
+          try {
+            const firestoreDrawings = await loadDrawingsFromFirestore(user.uid);
+            if (firestoreDrawings.length > 0) {
+              setDrawings(firestoreDrawings);
+            }
+          } catch {
+            // Firestore unavailable — local/mock data remains
+          }
         } else {
           setIsLoggedIn(false);
+          setUserId(null);
           setUserName("Anna");
           setUserEmail("");
         }
@@ -299,6 +316,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
       AsyncStorage.removeItem(STORAGE_KEY_DRAWINGS),
     ]);
     setIsLoggedIn(false);
+    setUserId(null);
     setUserName("Anna");
     setUserEmail("");
     setUserPhone("");
@@ -361,10 +379,19 @@ export function AppProvider({ children: reactChildren }: { children: React.React
       };
       const updated = [newDrawing, ...drawings];
       setDrawings(updated);
+      // Persist locally (offline-first)
       await AsyncStorage.setItem(STORAGE_KEY_DRAWINGS, JSON.stringify(updated));
+      // Sync to Firestore under the logged-in parent's account
+      if (isFirebaseConfigured && userId) {
+        try {
+          await saveDrawingToFirestore(userId, newDrawing);
+        } catch {
+          // Firestore write failed silently — local copy is still saved
+        }
+      }
       return newDrawing.id;
     },
-    [drawings]
+    [drawings, userId]
   );
 
   const getChildDrawings = useCallback(

@@ -61,9 +61,9 @@ function DrawingCard({ drawing, child, index }: { drawing: Drawing; child: Child
   const mountAnim  = useRef(new Animated.Value(0)).current;
   const cfg = ecfg(drawing.mainEmotion);
 
-  // Extract canvas snapshot or uploaded image from pathsJson
-  let thumbUri: string | null = null;
-  if (drawing.pathsJson) {
+  // Prefer the direct imageUri field; fall back to pathsJson for older records
+  let thumbUri: string | null = drawing.imageUri ?? null;
+  if (!thumbUri && drawing.pathsJson) {
     try {
       const parsed = JSON.parse(drawing.pathsJson);
       if (parsed?.imageUri) thumbUri = parsed.imageUri;

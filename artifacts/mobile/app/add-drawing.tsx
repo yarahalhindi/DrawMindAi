@@ -195,6 +195,7 @@ export default function AddDrawingScreen() {
     const drawingId = await addDrawing({
       childId: childId!,
       pathsJson: JSON.stringify({ imageUri }),
+      imageUri: imageUri ?? undefined,
       ...analysis,
     });
 

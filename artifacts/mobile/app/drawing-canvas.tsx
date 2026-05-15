@@ -252,6 +252,7 @@ export default function DrawingCanvas() {
     const drawingId = await addDrawing({
       childId: childId ?? "",
       pathsJson,
+      imageUri: imageUri ?? undefined,
       ...analysis,
     });
 
