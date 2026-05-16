@@ -175,7 +175,7 @@ export default function ChatScreen() {
               colors={["#C4A8F5", "#F0A8C8"]}
               style={styles.aiAvatarCircle}
             >
-              <Ionicons name="bulb-outline" size={22} color="#fff" />
+              <Ionicons name="brain" size={22} color="#fff" />
             </LinearGradient>
             <View style={styles.aiCardInfo}>
               <View style={styles.aiOnlineRow}>
@@ -233,7 +233,7 @@ export default function ChatScreen() {
                     colors={["#C4A8F5", "#F0A8C8"]}
                     style={styles.msgAiIcon}
                   >
-                    <Ionicons name="bulb-outline" size={14} color="#fff" />
+                    <Ionicons name="brain" size={14} color="#fff" />
                   </LinearGradient>
                 )}
                 <View

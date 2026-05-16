@@ -68,7 +68,7 @@ export default function SupportFeedbackScreen() {
       >
         {/* Hero */}
         <View style={styles.hero}>
-          <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.heroIcon}>
+          <LinearGradient colors={["#48CAE4", "#0096B7"]} style={styles.heroIcon}>
             <Ionicons name="chatbubble-ellipses-outline" size={28} color="#fff" />
           </LinearGradient>
           <Text style={styles.heroTitle}>How can we help?</Text>
@@ -118,7 +118,7 @@ export default function SupportFeedbackScreen() {
         {/* Send */}
         <TouchableOpacity onPress={handleSend} disabled={!canSend} activeOpacity={0.88}>
           <LinearGradient
-            colors={canSend ? ["#C4A8F5", "#F0A8C8"] : ["#C0B0D8", "#D0C0E8"]}
+            colors={canSend ? ["#48CAE4", "#0096B7"] : ["#C0B0D8", "#D0C0E8"]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.sendBtn}
           >
@@ -143,14 +143,14 @@ export default function SupportFeedbackScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5EFFE" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
   backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
   navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingTop: 8 },
 
   hero: { alignItems: "center", gap: 10, marginBottom: 28 },
-  heroIcon: { width: 68, height: 68, borderRadius: 24, alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
+  heroIcon: { width: 68, height: 68, borderRadius: 24, alignItems: "center", justifyContent: "center", shadowColor: "#48CAE4", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
   heroTitle: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
   heroSub: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
 
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   messageInput: { fontSize: 14, color: "#4A3070", fontFamily: "Inter_400Regular", lineHeight: 22, minHeight: 100 },
   charCount: { fontSize: 10, color: "#C0B0D8", fontFamily: "Inter_400Regular", textAlign: "right", marginTop: 6 },
 
-  sendBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginBottom: 16, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 18, elevation: 10 },
+  sendBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginBottom: 16, shadowColor: "#48CAE4", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 18, elevation: 10 },
   sendBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 
   footerNote: { fontSize: 12, color: "#B0A0CC", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 18 },

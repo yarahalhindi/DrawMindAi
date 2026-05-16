@@ -114,7 +114,7 @@ export default function ChangePasswordScreen() {
       >
         {/* Hero */}
         <View style={styles.hero}>
-          <LinearGradient colors={["#C4A8F5", "#F0A8C8"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.heroIcon}>
+          <LinearGradient colors={["#F8961E", "#E07010"]} style={styles.heroIcon}>
             <Ionicons name="lock-closed-outline" size={28} color="#fff" />
           </LinearGradient>
           <Text style={styles.heroTitle}>Update Password</Text>
@@ -155,7 +155,7 @@ export default function ChangePasswordScreen() {
         {/* Button */}
         <TouchableOpacity onPress={handleUpdate} disabled={!canSubmit} activeOpacity={0.88}>
           <LinearGradient
-            colors={canSubmit ? ["#C4A8F5", "#F0A8C8"] : ["#C0B0D8", "#D0C0E8"]}
+            colors={canSubmit ? ["#F8961E", "#E07010"] : ["#C0B0D8", "#D0C0E8"]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.updateBtn}
           >
@@ -173,14 +173,14 @@ export default function ChangePasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5EFFE" },
+  container: { flex: 1, backgroundColor: "#FDF8F5" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
   backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
   navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingTop: 8 },
 
   hero: { alignItems: "center", gap: 10, marginBottom: 28 },
-  heroIcon: { width: 68, height: 68, borderRadius: 24, alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
+  heroIcon: { width: 68, height: 68, borderRadius: 24, alignItems: "center", justifyContent: "center", shadowColor: "#F8961E", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8, marginBottom: 4 },
   heroTitle: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
   heroSub: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, maxWidth: 280 },
 
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   strengthBar: { flex: 1, height: 5, borderRadius: 3 },
   strengthLabel: { fontSize: 11, color: "#A090B8", fontFamily: "Inter_500Medium", width: 56, textAlign: "right" },
 
-  updateBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginBottom: 16, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 18, elevation: 10 },
+  updateBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, marginBottom: 16, shadowColor: "#F8961E", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 18, elevation: 10 },
   updateBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 
   footerNote: { fontSize: 12, color: "#B0A0CC", fontFamily: "Inter_400Regular", textAlign: "center" },
