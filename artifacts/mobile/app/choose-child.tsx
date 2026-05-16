@@ -195,7 +195,7 @@ export default function ChooseChildScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FDF8F5" },
+  container: { flex: 1, backgroundColor: "#EDE5FF" },
   navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 12 },
   backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
   navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   emptyBtn: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 24, paddingVertical: 13, borderRadius: 20 },
   emptyBtnText: { fontSize: 14, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 
-  footer: { paddingHorizontal: 20, paddingTop: 12, backgroundColor: "#FDF8F5", borderTopWidth: 1, borderTopColor: "#F0E8FF" },
+  footer: { paddingHorizontal: 20, paddingTop: 12, backgroundColor: "#EDE5FF", borderTopWidth: 1, borderTopColor: "#D8CCFF" },
   continueBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 10 },
   continueBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 });

@@ -189,7 +189,7 @@ export default function DrawingDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FDF8F5",
+    backgroundColor: "#EDE5FF",
   },
   scroll: {
     paddingHorizontal: 20,

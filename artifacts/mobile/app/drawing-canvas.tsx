@@ -396,7 +396,7 @@ export default function DrawingCanvas() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FDF8F5" },
+  container: { flex: 1, backgroundColor: "#EDE5FF" },
 
   /* Nav */
   navBar:       { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 10 },

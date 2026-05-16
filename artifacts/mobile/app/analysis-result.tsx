@@ -368,7 +368,7 @@ export default function AnalysisResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5EFFE",
+    backgroundColor: "#EDE5FF",
   },
   centerContent: {
     alignItems: "center",

@@ -187,7 +187,7 @@ export default function DrawingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5EFFE" },
+  container: { flex: 1, backgroundColor: "#EDE5FF" },
   scroll: { paddingHorizontal: 20 },
 
   pageTitle: {
