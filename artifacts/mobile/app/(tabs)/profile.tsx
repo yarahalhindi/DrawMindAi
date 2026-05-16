@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
-  Alert,
+  Modal,
   Platform,
   ScrollView,
   StyleSheet,
@@ -16,22 +16,24 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlassCard } from "@/components/GlassCard";
 import { useApp } from "@/context/AppContext";
 
-// ── Settings items with their routes ─────────────────────────────────────────
 const SETTINGS = [
-  { icon: "person-outline",            label: "Edit Profile",         color: "#A78BFA", route: "/edit-profile" },
-  { icon: "people-outline",            label: "Update Child Info",    color: "#B89CFF", route: "/choose-child?mode=edit" },
-  { icon: "chatbubble-outline",        label: "Support & Feedback",   color: "#48CAE4", route: "/support-feedback" },
-  { icon: "language-outline",          label: "Language",             color: "#90BE6D", route: "/language" },
-  { icon: "lock-closed-outline",       label: "Change Password",      color: "#F8961E", route: "/change-password" },
-  { icon: "information-circle-outline",label: "About App",            color: "#C4B0FF", route: "/about-app" },
-  { icon: "shield-outline",            label: "Privacy Policy",       color: "#577590", route: "/privacy-policy" },
-  { icon: "document-text-outline",     label: "Terms of Use",         color: "#A090B8", route: "/terms-of-use" },
+  { icon: "person-outline",             label: "Edit Profile",       color: "#A78BFA", route: "/edit-profile" },
+  { icon: "people-outline",             label: "Update Child Info",  color: "#B89CFF", route: "/choose-child?mode=edit" },
+  { icon: "chatbubble-outline",         label: "Support & Feedback", color: "#48CAE4", route: "/support-feedback" },
+  { icon: "language-outline",           label: "Language",           color: "#90BE6D", route: "/language" },
+  { icon: "lock-closed-outline",        label: "Change Password",    color: "#F8961E", route: "/change-password" },
+  { icon: "information-circle-outline", label: "About App",          color: "#C4B0FF", route: "/about-app" },
+  { icon: "shield-outline",             label: "Privacy Policy",     color: "#577590", route: "/privacy-policy" },
+  { icon: "document-text-outline",      label: "Terms of Use",       color: "#A090B8", route: "/terms-of-use" },
 ] as const;
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { userName, userEmail, children, drawings, logout } = useApp();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
+
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   const happyCount = drawings.filter((d) => d.mainEmotion.toLowerCase().includes("happy")).length;
   const happyPct   = drawings.length > 0 ? Math.round((happyCount / drawings.length) * 100) : 0;
@@ -41,24 +43,17 @@ export default function ProfileScreen() {
     router.push(route as any);
   }
 
-  async function handleLogout() {
+  function handleLogoutPress() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      "Sign Out",
-      "Are you sure you want to sign out?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Sign Out",
-          style: "destructive",
-          onPress: async () => {
-            await logout();
-            router.replace("/");
-          },
-        },
-      ],
-      { cancelable: true }
-    );
+    setShowSignOutModal(true);
+  }
+
+  async function confirmSignOut() {
+    setSigningOut(true);
+    await logout();
+    setShowSignOutModal(false);
+    setSigningOut(false);
+    router.replace("/welcome");
   }
 
   return (
@@ -134,13 +129,61 @@ export default function ProfileScreen() {
             ))}
           </GlassCard>
 
-          {/* Sign Out */}
-          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.85}>
+          {/* Sign Out button */}
+          <TouchableOpacity
+            style={styles.logoutBtn}
+            onPress={handleLogoutPress}
+            activeOpacity={0.85}
+          >
             <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
             <Text style={styles.logoutText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* ── Sign-out confirmation modal ── */}
+      <Modal
+        visible={showSignOutModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSignOutModal(false)}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.modalCard}>
+            {/* Icon */}
+            <View style={styles.modalIconWrap}>
+              <Ionicons name="log-out-outline" size={30} color="#FF6B6B" />
+            </View>
+
+            <Text style={styles.modalTitle}>Sign Out</Text>
+            <Text style={styles.modalBody}>
+              Are you sure you want to sign out of Draw Mind AI?
+            </Text>
+
+            <View style={styles.modalBtns}>
+              <TouchableOpacity
+                style={styles.cancelBtn}
+                onPress={() => setShowSignOutModal(false)}
+                activeOpacity={0.8}
+                disabled={signingOut}
+              >
+                <Text style={styles.cancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.confirmBtn, signingOut && { opacity: 0.6 }]}
+                onPress={confirmSignOut}
+                activeOpacity={0.85}
+                disabled={signingOut}
+              >
+                <Text style={styles.confirmBtnText}>
+                  {signingOut ? "Signing out…" : "Sign Out"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -173,6 +216,17 @@ const styles = StyleSheet.create({
   settingIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   settingLabel: { flex: 1, fontSize: 15, color: "#4A3070", fontFamily: "Inter_500Medium", fontWeight: "500" },
 
-  logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 20, paddingVertical: 16, shadowColor: "#B89CFF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 3 },
+  logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 20, paddingVertical: 16, shadowColor: "#FF6B6B", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 3, marginBottom: 8 },
   logoutText: { fontSize: 15, fontWeight: "700", color: "#FF6B6B", fontFamily: "Inter_700Bold" },
+
+  overlay: { flex: 1, backgroundColor: "rgba(50,30,100,0.4)", justifyContent: "center", alignItems: "center", paddingHorizontal: 28 },
+  modalCard: { width: "100%", backgroundColor: "#FDFAFF", borderRadius: 28, padding: 28, alignItems: "center", shadowColor: "#7B5CE5", shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.18, shadowRadius: 32, elevation: 20 },
+  modalIconWrap: { width: 64, height: 64, borderRadius: 22, backgroundColor: "#FFF0F0", alignItems: "center", justifyContent: "center", marginBottom: 16 },
+  modalTitle: { fontSize: 20, fontWeight: "800", color: "#3D2B6E", fontFamily: "Inter_700Bold", marginBottom: 8 },
+  modalBody: { fontSize: 14, color: "#8070A0", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, marginBottom: 28 },
+  modalBtns: { flexDirection: "row", gap: 12, width: "100%" },
+  cancelBtn: { flex: 1, paddingVertical: 15, borderRadius: 18, backgroundColor: "#F0E8FF", alignItems: "center" },
+  cancelBtnText: { fontSize: 15, fontWeight: "600", color: "#7B5CE5", fontFamily: "Inter_600SemiBold" },
+  confirmBtn: { flex: 1, paddingVertical: 15, borderRadius: 18, backgroundColor: "#FF6B6B", alignItems: "center" },
+  confirmBtnText: { fontSize: 15, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 });
