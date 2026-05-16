@@ -247,7 +247,7 @@ export default function AddChildScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FDF8F5",
+    backgroundColor: "#F5EFFE",
   },
   navBar: {
     flexDirection: "row",
