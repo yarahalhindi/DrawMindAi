@@ -13,8 +13,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GradientButton } from "@/components/GradientButton";
 
-const { width, height } = Dimensions.get("window");
-
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -42,14 +40,16 @@ export default function WelcomeScreen() {
 
   return (
     <LinearGradient
-      // الألوان الجديدة التي تعطي إحساس السحر (Pastel Dreamy Gradient)
       colors={["#B298FF", "#FFADE1"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.container, { paddingTop: topPad, paddingBottom: botPad }]}
     >
+      {/* عناصر الخلفية والزينة */}
       <View style={styles.orb1} />
       <View style={styles.orb2} />
+      <Text style={[styles.star, { top: '12%', left: '18%' }]}>✦</Text>
+      <Text style={[styles.star, { top: '22%', right: '18%', fontSize: 24 }]}>✦</Text>
 
       <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
         <Animated.View style={[styles.mascotWrap, { transform: [{ translateY: floatAnim }] }]}>
@@ -71,7 +71,15 @@ export default function WelcomeScreen() {
             label="Get Started"
             onPress={() => router.push("/login")}
             size="lg"
-            style={styles.btn}
+            // تم تعديل الـ style لضمان ظهور التأثير الزجاجي (Glassmorphism)
+            style={[
+              styles.btn, 
+              { 
+                backgroundColor: 'rgba(255, 255, 255, 0.3)', 
+                borderWidth: 1.5, 
+                borderColor: 'rgba(255, 255, 255, 0.6)' 
+              }
+            ]}
           />
         </View>
       </Animated.View>
@@ -80,66 +88,19 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  orb1: {
-    position: "absolute",
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    top: -50,
-    left: -50,
-  },
-  orb2: {
-    position: "absolute",
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    bottom: 50,
-    right: -50,
-  },
-  content: {
-    alignItems: "center",
-    paddingHorizontal: 32,
-    width: "100%",
-  },
-  mascotWrap: {
-    marginBottom: 40,
-  },
-  mascot: {
-    width: 220,
-    height: 220,
-  },
+  container: { flex: 1, alignItems: "center", justifyContent: "center" },
+  orb1: { position: "absolute", width: 300, height: 300, borderRadius: 150, backgroundColor: "rgba(255,255,255,0.2)", top: -50, left: -50 },
+  orb2: { position: "absolute", width: 250, height: 250, borderRadius: 125, backgroundColor: "rgba(255,255,255,0.15)", bottom: 50, right: -50 },
+  star: { position: 'absolute', color: 'white', opacity: 0.7, fontSize: 32 },
+  content: { alignItems: "center", paddingHorizontal: 32, width: "100%" },
+  mascotWrap: { marginBottom: 40 },
+  mascot: { width: 220, height: 220 },
   appName: {
-    fontSize: 42,
-    fontWeight: "800",
-    color: "#FFFFFF", // لون أبيض ليكون أوضح
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.5,
-    marginBottom: 16,
-    textAlign: "center",
-    textShadowColor: 'rgba(0, 0, 0, 0.15)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    fontSize: 42, fontWeight: "800", color: "#FFFFFF", fontFamily: "Inter_700Bold",
+    marginBottom: 16, textAlign: "center", textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4,
   },
-  tagline: {
-    fontSize: 18,
-    color: "#FDFDFD", // لون فاتح
-    textAlign: "center",
-    lineHeight: 28,
-    fontFamily: "Inter_400Regular",
-    marginBottom: 56,
-  },
-  btnWrap: {
-    width: "100%",
-  },
-  btn: {
-    width: "100%",
-    // يمكنك هنا إضافة shadow للزر ليعطي إحساس الـ Glassmorphism
-  },
+  tagline: { fontSize: 18, color: "#FDFDFD", textAlign: "center", lineHeight: 28, fontFamily: "Inter_400Regular", marginBottom: 56 },
+  btnWrap: { width: "100%" },
+  btn: { width: "100%", borderRadius: 50, paddingVertical: 15, overflow: 'hidden' },
 });
