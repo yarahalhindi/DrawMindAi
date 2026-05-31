@@ -1,5 +1,5 @@
 // ── Server Configuration ──────────────────────────────────────────────────────
-const API_URL = "http://localhost:5000"; // Change to your IP if using a physical phone
+export const API_URL = "http://localhost:8000"; // Change to your IP if using a physical phone
 
 export interface StoredUser {
   name: string;

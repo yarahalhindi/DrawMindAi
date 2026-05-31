@@ -12,6 +12,7 @@ export interface Child {
   parentNotes: string;
   avatarColor: string;
   initials: string;
+  icon: string;
 }
 
 export interface EmotionScore {
@@ -42,6 +43,7 @@ interface AppContextType {
   isLoggedIn: boolean;
   userName: string;
   userEmail: string;
+  userId: number | null;
   userPhone: string;
   userRelationship: string;
   children: Child[];
@@ -49,7 +51,7 @@ interface AppContextType {
   fetchDrawings: (childId: string) => Promise<void>;
   login: (email: string, name: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
-  register: (email: string, password: string, name: string) => Promise<AuthResult>;
+  register: (email: string, password: string, name: string, userRole: string) => Promise<AuthResult>;
   loginWithSocial: (email: string, name: string, provider: "google" | "apple") => Promise<AuthResult>;
   logout: () => Promise<void>;
   updateUserProfile: (name: string, email: string, phone: string, relationship: string) => Promise<void>;
@@ -73,6 +75,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   const [userName, setUserName] = useState("Anna");
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [userId, setUserId] = useState<number | null>(null);
   const [userRelationship, setUserRelationship] = useState("");
   const [children, setChildren] = useState<Child[]>([]);
   const [drawings, setDrawings] = useState<Drawing[]>([]);
@@ -105,32 +108,43 @@ export function AppProvider({ children: reactChildren }: { children: React.React
     })();
   }, []);
 
-  const _persistAuth = async (name: string, email: string) => {
-    const data = { isLoggedIn: true, userName: name, userEmail: email, userPhone, userRelationship };
+  const _persistAuth = async (name: string, email: string, id: number) => {
+    // 🚨 Save userId to local storage
+    const data = { isLoggedIn: true, userName: name, userEmail: email, userId: id, userPhone, userRelationship };
     await AsyncStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(data));
     setIsLoggedIn(true);
     setUserName(name);
     setUserEmail(email);
+    setUserId(id); // 🚨 Fixed the capitalization here!
     await fetchChildren(email);
   };
 
-  const login = useCallback(async (email: string, name: string) => { await _persistAuth(name, email); }, []);
+  const login = useCallback(async (email: string, name: string) => { await _persistAuth(name, email, 0); }, []);
 
   const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     const result = await signInUser(email, password);
-    if (result.success && result.user) await _persistAuth(result.user.name, result.user.email);
+    if (result.success && result.user) {
+      // 🚨 Added (as any) to bypass the strict TypeScript check!
+      await _persistAuth(result.user.name, result.user.email, (result.user as any).id || 0);
+    }
     return result;
   }, []);
 
-  const register = useCallback(async (email: string, password: string, name: string): Promise<AuthResult> => {
+  const register = useCallback(async (email: string, password: string, name: string,userRole: string): Promise<AuthResult> => {
     const result = await registerUser(email, password, name);
-    if (result.success && result.user) await _persistAuth(result.user.name, result.user.email);
+    if (result.success && result.user) {
+      // 🚨 Added (as any) here too
+      await _persistAuth(result.user.name, result.user.email, (result.user as any).id || 0);
+    }
     return result;
   }, []);
 
   const loginWithSocial = useCallback(async (email: string, name: string, provider: "google" | "apple"): Promise<AuthResult> => {
     const result = await socialLogin(email, name, provider);
-    if (result.success && result.user) await _persistAuth(result.user.name, result.user.email);
+    if (result.success && result.user) {
+      // 🚨 Added (as any) here too
+      await _persistAuth(result.user.name, result.user.email, (result.user as any).id || 0);
+    }
     return result;
   }, []);
 
@@ -152,7 +166,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
 
   const fetchChildren = useCallback(async (email: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/children?user_email=${encodeURIComponent(email)}`);
+      const response = await fetch(`http://localhost:8000/children?user_email=${encodeURIComponent(email)}`);
       const data = await response.json();
       if (response.ok && data.success) {
         setChildren(data.children);
@@ -163,11 +177,20 @@ export function AppProvider({ children: reactChildren }: { children: React.React
 
   const addChild = useCallback(async (child: Omit<Child, "id">) => {
     const avatarColor = child.avatarColor || AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+    const icon = child.icon || "happy-outline"; // Default icon if none selected
     const initials = child.name.slice(0, 2).toUpperCase();
+    
     try {
-      const response = await fetch("http://localhost:5000/children", {
+      const response = await fetch("http://localhost:8000/children", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_email: userEmail, child_name: child.name, age: child.age, gender: child.gender }),
+        body: JSON.stringify({ 
+          user_email: userEmail, 
+          child_name: child.name, 
+          age: child.age, 
+          gender: child.gender,
+          icon: icon,               // 🚨 SENDING THE ICON
+          avatar_color: avatarColor // 🚨 SENDING THE COLOR
+        }),
       });
       const data = await response.json();
       if (response.ok && data.success) {
@@ -182,7 +205,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   // ── الدالة المصححة لجلب الرسومات ──
   const fetchDrawings = useCallback(async (childId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/drawings?child_id=${childId}`);
+      const response = await fetch(`http://localhost:8000/drawings?child_id=${childId}`);
       const data = await response.json();
       if (response.ok && data.success) {
         const normalized = (data.drawings || []).map((d: any) => ({
@@ -206,7 +229,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
 
   const deleteDrawing = async (drawingId: string, childId: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/drawings/${drawingId}`, { method: "DELETE" });
+      const response = await fetch(`http://localhost:8000/drawings/${drawingId}`, { method: "DELETE" });
       if (response.ok) {
         if (fetchDrawings) fetchDrawings(childId);
         return true;
@@ -218,7 +241,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   const addDrawing = useCallback(async (drawing: Omit<Drawing, "id" | "date">): Promise<string> => {
     try {
       const cleanChildId = parseInt(drawing.childId.replace("child-", "")) || 1;
-      const response = await fetch("http://localhost:5000/drawings", {
+      const response = await fetch("http://localhost:8000/drawings", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ child_id: cleanChildId, image_path: "uploads/child_drawing_" + Date.now() + ".png", parent_explanation: drawing.summary || "No explanation", status: "analyzed" }),
       });
@@ -245,7 +268,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   }, [getChildDrawings]);
 
   return (
-    <AppContext.Provider value={{ isLoggedIn, userName, userEmail, userPhone, userRelationship, children, drawings, fetchDrawings, login, signIn, register, loginWithSocial, logout, updateUserProfile, addChild, updateChild, addDrawing, getChildDrawings, getChildEmotionSummary , deleteDrawing}}>
+    <AppContext.Provider value={{ isLoggedIn, userName, userEmail, userPhone, userId, userRelationship, children, drawings, fetchDrawings, login, signIn, register, loginWithSocial, logout, updateUserProfile, addChild, updateChild, addDrawing, getChildDrawings, getChildEmotionSummary , deleteDrawing}}>
       {reactChildren}
     </AppContext.Provider>
   );

@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   Platform,
@@ -17,63 +17,77 @@ import { useApp } from "@/context/AppContext";
 export default function DrawingAnalysisScreen() {
   const insets = useSafeAreaInsets();
   
-  // جلب المعرفات المرسلة في الرابط
-  const { drawingId, childId: paramChildId } = useLocalSearchParams<{ drawingId: string; childId: string }>();
+  // 1. Fetch params from router
+  const { drawingId, childId: paramChildId, freshAnalysis, freshImage } = useLocalSearchParams<any>();
   
   const appContext = useApp();
   const drawings = appContext?.drawings || [];
-
   const [loading, setLoading] = useState(false);
 
   const topPad = Platform.OS === "web" ? 20 : insets.top;
   const botPad = Platform.OS === "web" ? 24 : insets.bottom;
 
-  // المطابقة المرنة للرسمة
-  // بدلاً من d.id، استخدمي هذا البحث المرن:
- const drawing = drawings.find((d: any) => {
-  const currentId = d.id || d.drawing_id; 
-  return currentId && drawingId && currentId.toString() === drawingId.toString();
- });
-  // 💡 تحديد childId الذكي: إذا لم يأتي من الرابط، نأخذه فوراً من بيانات الرسمة داخل الـ Context
-  const targetChildId = paramChildId || (drawing as any)?.childId || (drawing as any)?.child_id;
+  // 2. Find the drawing in context
+  const drawing = drawings.find((d: any) => {
+    const currentId = d.id || d.drawing_id; 
+    return currentId && drawingId && currentId.toString() === drawingId.toString();
+  });
+  
+const [safeChildId] = useState(paramChildId || (drawing as any)?.childId || (drawing as any)?.child_id);
+  // 3. Unpack the JSON safely from the router
+  let parsedAnalysis = null;
+  try {
+    if (freshAnalysis) {
+      parsedAnalysis = JSON.parse(freshAnalysis);
+      
+      // 🚨 FIX: If Groq double-wrapped the JSON in quotes, parse it one more time!
+      if (typeof parsedAnalysis === "string") {
+        parsedAnalysis = JSON.parse(parsedAnalysis);
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse injected analysis", e);
+  }
 
-  // دالة زر Done للرجوع الفوري لصفحة تفاصيل الطفل الصحيحة
+  // 🚨 4. CREATE THE SINGLE TRUTH SOURCE
+  const activeAnalysis = parsedAnalysis || (drawing as any)?.analysis;
+  
+  // Set up the Image
+  const drawingPath = freshImage || (drawing as any)?.image_path || (drawing as any)?.imageUrl || "";
+  const imageUri = drawingPath
+    ? (drawingPath.startsWith("http") ? drawingPath : `http://127.0.0.1:8000${drawingPath}`)
+    : "https://via.placeholder.com/150";
+
+  // Handlers
   function handleDone() {
-    if (targetChildId) {
+    if (safeChildId) {
       router.replace({
         pathname: "/child-analysis",
-        params: { childId: targetChildId }
+        params: { childId: safeChildId }
       });
     } else {
-      router.replace("/"); // حماية أخيرة للهوم
+      router.replace("/");
     }
   }
 
   async function handleDelete() {
     if (!drawingId) return;
     setLoading(true);
-
     try {
-      // إرسال طلب الحذف الفعلي لسيرفر FastAPI ومسحه من قاعدة بيانات Neon
-      const response = await fetch(`http://localhost:5000/drawings/${drawingId}`, {
+      const response = await fetch(`http://127.0.0.1:8000/drawings/${drawingId}`, {
         method: "DELETE",
       });
-
       const data = await response.json();
 
       if (response.ok && data.success) {
-        console.log("Drawing deleted successfully from Neon Console!");
-
-        // 1. تحديث الـ Context داخلياً أولاً لتحديث الحالة
+        console.log("Drawing deleted successfully!");
         if (appContext && 'deleteDrawing' in appContext) {
           await (appContext as any).deleteDrawing(drawingId);
         }
-
-        // 2. 🚀 الطيران الفوري لصفحة تفاصيل الطفل المحددة بناءً على المعرف الذكي
-        if (targetChildId) {
+        if (safeChildId) {
           router.replace({
             pathname: "/child-analysis",
-            params: { childId: targetChildId }
+            params: { childId: safeChildId }
           });
         } else {
           router.replace("/");
@@ -89,33 +103,37 @@ export default function DrawingAnalysisScreen() {
     }
   }
 
-  // حماية الخروج الصامت لمنع الشاشات البيضاء أو أخطاء الـ 404 المؤقتة
-  if (!drawing) {
-    if (Platform.OS === "web") {
-      if (targetChildId) {
-        router.replace({
-          pathname: "/child-analysis",
-          params: { childId: targetChildId }
-        });
-      } else {
-        router.replace("/");
+  // Silent fallback if no data
+  useEffect(() => {
+    if (!drawing && !activeAnalysis) {
+      if (Platform.OS === "web") {
+        if (safeChildId) {
+          router.replace({ pathname: "/child-analysis", params: { childId: safeChildId } });
+        } else {
+          router.replace("/");
+        }
       }
     }
-    return null;
+  }, [drawing, activeAnalysis, safeChildId]);
+
+  if (!drawing && !activeAnalysis) {
+    return null; // Prevents the broken UI from rendering while it redirects
   }
 
-  const drawingPath = (drawing as any).image_path || (drawing as any).imageUrl || "";
-  const imageUri = drawingPath
-    ? (drawingPath.startsWith("http") ? drawingPath : `http://localhost:5000${drawingPath}`)
-    : "https://via.placeholder.com/150";
-
   return (
-    <View style={[styles.container, { paddingTop: topPad, paddingBottom: botPad }]}>
-      {/* NavBar بدون سهم العودة العلوي */}
+    <View style={styles.container}>
+      {/* NavBar with Back Button */}
       <View style={styles.navBar}>
-        <View style={{ width: 24 }} />
+        <TouchableOpacity 
+          onPress={() => router.back()} 
+          style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start' }}
+        >
+          <Ionicons name="chevron-back" size={26} color="#4A3070" />
+        </TouchableOpacity>
+        
         <Text style={styles.navTitle}>Drawing Analysis</Text>
-        <View style={{ width: 24 }} />
+        
+        <View style={{ width: 40 }} /> {/* Balances the header */}
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
@@ -126,16 +144,19 @@ export default function DrawingAnalysisScreen() {
             style={styles.drawingImage} 
             resizeMode="contain" 
           />
-          <Text style={styles.drawingTitle}>{(drawing as any).summary || "Child's Drawing"}</Text>
-          <Text style={styles.drawingDate}>{(drawing as any).date || "2026-05-20"}</Text>
+          <Text style={styles.drawingDate}>{(drawing as any)?.date || new Date().toISOString().split('T')[0]}</Text>
         </View>
 
         {/* Detected Emotion Banner */}
         <View style={styles.emotionBanner}>
           <Text style={styles.emotionLabel}>DETECTED EMOTION</Text>
-          <Text style={styles.emotionValue}>{(drawing as any).mainEmotion || "Happiness"}</Text>
+          <Text style={[styles.emotionValue, { fontSize: 22, textAlign: 'center' }]}>
+            {activeAnalysis?.emotional_status || "Analysis pending"}
+          </Text>
           <View style={styles.confidenceBadge}>
-            <Text style={styles.confidenceText}>✨ {(drawing as any).confidenceLevel || 92}% confidence</Text>
+            <Text style={styles.confidenceText}>
+              ✨ {activeAnalysis?.confidence_level || "Analyzing..."} confidence
+            </Text>
           </View>
         </View>
 
@@ -145,7 +166,15 @@ export default function DrawingAnalysisScreen() {
             <Ionicons name="sparkles" size={16} color="#A78BFA" />
             <Text style={styles.cardHeading}>AI Summary</Text>
           </View>
-          <Text style={styles.arabicText}>تشير هذه الرسمة إلى شعور الطفل بالسعادة والاستقرار والبهجة.</Text>
+          <Text style={[styles.arabicText, { textAlign: "left" }]}>
+            {activeAnalysis?.explanation || "AI analysis is generating..."}
+          </Text>
+          
+          {activeAnalysis?.what_model_focused_on && (
+            <Text style={[styles.arabicText, { textAlign: "left", marginTop: 12, fontStyle: "italic", color: "#A78BFA" }]}>
+              🔍 Model Focus: {activeAnalysis.what_model_focused_on}
+            </Text>
+          )}
         </View>
 
         {/* Behavioral Insights */}
@@ -154,20 +183,26 @@ export default function DrawingAnalysisScreen() {
             <Ionicons name="analytics-outline" size={16} color="#A78BFA" />
             <Text style={styles.cardHeading}>Behavioral Insights</Text>
           </View>
-          <View style={styles.insightItem}>
-            <Ionicons name="heart-outline" size={18} color="#FF6B9D" />
-            <View style={styles.insightTextContainer}>
-              <Text style={styles.insightTitle}>Emotional State</Text>
-              <Text style={styles.insightSub}>Excellent emotional stability and positivity</Text>
+
+          {activeAnalysis?.positive_signs?.map((sign: string, index: number) => (
+            <View style={styles.insightItem} key={`pos-${index}`}>
+              <Ionicons name="heart-outline" size={18} color="#FF6B9D" />
+              <View style={styles.insightTextContainer}>
+                <Text style={styles.insightTitle}>Positive Indicator</Text>
+                <Text style={[styles.insightSub, { textAlign: "left" }]}>{sign}</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.insightItem}>
-            <Ionicons name="people-outline" size={18} color="#48CAE4" />
-            <View style={styles.insightTextContainer}>
-              <Text style={styles.insightTitle}>Social Indicators</Text>
-              <Text style={styles.insightSub}>Very socially engaged and connected</Text>
+          ))}
+
+          {activeAnalysis?.concern_signs?.map((sign: string, index: number) => (
+            <View style={styles.insightItem} key={`con-${index}`}>
+              <Ionicons name="warning-outline" size={18} color="#F5A623" />
+              <View style={styles.insightTextContainer}>
+                <Text style={styles.insightTitle}>Area of Concern</Text>
+                <Text style={[styles.insightSub, { textAlign: "left" }]}>{sign}</Text>
+              </View>
             </View>
-          </View>
+          ))}
         </View>
 
         {/* Recommendations */}
@@ -176,10 +211,26 @@ export default function DrawingAnalysisScreen() {
             <Ionicons name="ribbon-outline" size={16} color="#A78BFA" />
             <Text style={styles.cardHeading}>Recommendations</Text>
           </View>
-          <Text style={styles.insightSub}>✓ Encourage your child to continue drawing to further express positive feelings.</Text>
+          
+          {activeAnalysis?.suggestions?.map((suggestion: string, index: number) => (
+            <Text style={[styles.insightSub, { textAlign: "left", marginBottom: 6 }]} key={`sug-${index}`}>
+              ✓ {suggestion}
+            </Text>
+          )) || <Text style={styles.insightSub}>Generating recommendations...</Text>}
+
+          {activeAnalysis?.professional_note && (
+            <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: "#EAD4F5" }}>
+              <Text style={[styles.insightSub, { textAlign: "left", fontWeight: "600", color: "#4A3070" }]}>
+                Professional Note:
+              </Text>
+              <Text style={[styles.insightSub, { textAlign: "left" }]}>
+                {activeAnalysis.professional_note}
+              </Text>
+            </View>
+          )}
         </View>
 
-        {/* شريط الأزرار السفلي الثنائي المتناسق */}
+        {/* Bottom Buttons */}
         <View style={styles.btnRow}>
           <TouchableOpacity onPress={handleDone} style={styles.doneBtn}>
             <LinearGradient colors={["#C4A8F5", "#A78BFA"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.gradientBtn}>

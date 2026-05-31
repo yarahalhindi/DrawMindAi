@@ -33,21 +33,22 @@ function getGreeting() {
   return "Good Evening";
 }
 
-// ── Sparkline chart (Fixed Height & ViewBox to prevent clipping) ──────────────
+// ── Sparkline chart ────────────────────────────────────────────────────────
 function SparklineChart({
   emotionData,
   activityData,
   dailyDominantLabels,
   width,
   selectedIndex,
+  onSelectIndex, // 🚨 Added this!
 }: {
   emotionData: number[];
   activityData: number[];
   dailyDominantLabels: string[];
   width: number;
   selectedIndex: number | null;
+  onSelectIndex: (i: number | null) => void; // 🚨 Added this!
 }) {
-  // تم زيادة الارتفاع وترك مسافة أمان علوية 15 بكسل لمنع قص الكلام من السقف
   const H = 115; 
   const pad = 10;
 
@@ -99,38 +100,27 @@ function SparklineChart({
       <Path d={smooth(activityData)} fill="none" stroke="#A78BFA" strokeWidth="2.5" strokeLinecap="round" />
       <Path d={smooth(emotionData)} fill="none" stroke="#FF6B9D" strokeWidth="2.5" strokeLinecap="round" />
 
-      {/* طباعة نصوص العواطف الصريحة كاملة فوق النقاط */}
-      {ys.map((yVal, idx) => {
-        const label = dailyDominantLabels[idx];
-        if (!label) return null; 
+      {/* 🚨 INVISIBLE HIT AREA: Big circles so it's easy to tap */}
+      {xs.map((x, i) => (
+        <Circle 
+          key={`touch-${i}`} 
+          cx={x} cy={ys[i]} r={16} 
+          fill="transparent" 
+          onPress={() => onSelectIndex(selectedIndex === i ? null : i)} 
+        />
+      ))}
 
-        let labelColor = "#FF6B9D"; 
-        if (label === "Sad") labelColor = "#3A86FF";
-        if (label === "Angry") labelColor = "#E63946";
-        if (label === "Anxious") labelColor = "#FF9F1C";
-        
-        return (
-          <g key={idx}>
-            <SvgText
-              x={xs[idx]}
-              y={yVal - 8}
-              fontSize="9"
-              fontWeight="bold"
-              fill={labelColor}
-              textAnchor="middle"
-            >
-              {label}
-            </SvgText>
-          </g>
-        );
-      })}
-
-      {selectedIndex !== null && (
-        <>
-          <Circle cx={xs[selectedIndex]} cy={ys[selectedIndex]} r={5} fill="#FF6B9D" stroke="#fff" strokeWidth={1.5} />
-          <Circle cx={xs[selectedIndex]} cy={H - pad - (activityData[selectedIndex] / 100) * (H - pad * 2 - 15)} r={5} fill="#A78BFA" stroke="#fff" strokeWidth={1.5} />
-        </>
-      )}
+      {/* 🚨 VISIBLE DOTS */}
+      {xs.map((x, i) => (
+        <Circle 
+          key={`vis-${i}`} 
+          cx={x} cy={ys[i]} 
+          r={selectedIndex === i ? 8 : 4} 
+          fill={selectedIndex === i ? "#FF6B9D" : "#fff"} 
+          stroke="#FF6B9D" strokeWidth={2} 
+          pointerEvents="none" 
+        />
+      ))}
     </Svg>
   );
 }
@@ -198,7 +188,8 @@ function ActionBtn({ icon, label, sub, colors, onPress }: { icon: string; label:
 // ── Home Screen ───────────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { userName, children, drawings } = useApp();
+  // 🚨 Added fetchDrawings to trigger database pull
+  const { userName, children, drawings, fetchDrawings } = useApp();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
 
   const [progressVisible, setProgressVisible] = useState(true);
@@ -215,6 +206,13 @@ export default function HomeScreen() {
     }
   }, [children]);
 
+  // 🚨 Automatically fetch drawings when Home loads
+  useEffect(() => {
+    if (selectedChildId && fetchDrawings) {
+      fetchDrawings(selectedChildId);
+    }
+  }, [selectedChildId]);
+
   const selectedChild = useMemo(() => {
     if (!selectedChildId && children.length > 0) return children[0];
     return children.find((c) => String(c.id) === String(selectedChildId));
@@ -223,19 +221,27 @@ export default function HomeScreen() {
   const childDrawings = useMemo(() => {
     if (!selectedChild) return [];
     const targetId = String(selectedChild.id);
-    return drawings.filter((d) => String(d.childId) === targetId);
+    // 🚨 ADDED : any to bypass TypeScript rulebook
+    return drawings.filter((d: any) => String(d.childId || d.child_id) === targetId);
   }, [drawings, selectedChild]);
 
+  // REAL-DATA MATH ENGINE
   const emotionBreakdown = useMemo(() => {
-    if (!childDrawings.length) return { happy: 0, sad: 0, angry: 0, anxious: 0 };
-    let happy = 0, sad = 0, angry = 0, anxious = 0;
+    if (!childDrawings.length) return { happy: 0, sad: 0, angry: 0, fear: 0, mixed: 0 };
+    let happy = 0, sad = 0, angry = 0, fear = 0, mixed = 0;
 
-    childDrawings.forEach((d) => {
-      const emo = d.mainEmotion?.toLowerCase() || "";
-      if (emo.includes("happ")) happy++;
-      else if (emo.includes("sad")) sad++;
-      else if (emo.includes("angr")) angry++;
-      else anxious++;
+    // 🚨 ADDED : any to bypass TypeScript rulebook
+    childDrawings.forEach((d: any) => {
+      const status = (d?.analysis?.emotional_status || "").toLowerCase();
+      
+      if (status.includes("mix")) {
+        mixed++;
+      } else {
+        if (status.includes("happ") || status.includes("joy") || status.includes("positiv")) happy++;
+        if (status.includes("sad")) sad++;
+        if (status.includes("ang") || status.includes("frustrat")) angry++;
+        if (status.includes("fear") || status.includes("anxi") || status.includes("scare") || status.includes("worr")) fear++;
+      }
     });
 
     const total = childDrawings.length;
@@ -243,13 +249,14 @@ export default function HomeScreen() {
       happy: Math.round((happy / total) * 100),
       sad: Math.round((sad / total) * 100),
       angry: Math.round((angry / total) * 100),
-      anxious: Math.round((anxious / total) * 100),
+      fear: Math.round((fear / total) * 100),
+      mixed: Math.round((mixed / total) * 100),
     };
   }, [childDrawings]);
 
   const happyPct = emotionBreakdown.happy;
 
-  // بوكس الحالة التحذيري الذكي والخط الأحمر
+  // SMART RED DISTRESS BOX LOGIC
   const childStatusEvaluation = useMemo(() => {
     if (!childDrawings.length) {
       return {
@@ -259,55 +266,74 @@ export default function HomeScreen() {
       };
     }
 
-    const { sad, angry, anxious } = emotionBreakdown;
-    if (sad > 50 || angry > 50 || anxious > 50 || (sad + angry + anxious) > 50) {
+    const { sad, angry, fear } = emotionBreakdown;
+    const totalNegative = sad + angry + fear;
+
+    if (totalNegative >= 50) {
       let dominantNegative = "Sadness";
-      if (angry > sad && angry > anxious) dominantNegative = "Anger";
-      if (anxious > sad && anxious > angry) dominantNegative = "Anxiety";
+      if (angry > sad && angry > fear) dominantNegative = "Anger";
+      if (fear > sad && fear > angry) dominantNegative = "Fear";
 
       return {
         isDanger: true,
         title: "Emotional Distress Signal Detected",
-        description: `Warning: ${selectedChild?.name || "Child"}'s drawings reflect a high density of ${dominantNegative} indicators (${Math.max(sad, angry, anxious)}%). Psychological attention or parental intervention is highly recommended.`,
+        description: `Warning: ${selectedChild?.name || "Child"}'s drawings reflect a high density of ${dominantNegative} indicators (${Math.max(sad, angry, fear)}%). Psychological attention or parental intervention is highly recommended.`,
       };
     }
 
     return {
       isDanger: false,
       title: "Stable Emotional State",
-      description: `${selectedChild?.name || "Child"} is presenting a highly balanced mental state. 100% of analyzed data indicates safe emotional progression and normal creative expression.`,
+      description: `${selectedChild?.name || "Child"} is presenting a highly balanced mental state. Analyzed data indicates safe emotional progression and normal creative expression.`,
     };
   }, [emotionBreakdown, childDrawings, selectedChild]);
 
-  // معالجة البيانات وبناء مصفوفة النصوص اليومية الديناميكية للمنحنى
+  // WEEKLY SPARKLINE CHART MATH ENGINE
   const { emotionData, activityData, dayDetails, dailyDominantLabels } = useMemo(() => {
     const weeklyEmotionsCount = [0, 0, 0, 0, 0, 0, 0];
-    const weeklyHappyCount = [0, 0, 0, 0, 0, 0, 0];
-    const weeklySadCount = [0, 0, 0, 0, 0, 0, 0];
-    const weeklyAngryCount = [0, 0, 0, 0, 0, 0, 0];
-    const weeklyAnxiousCount = [0, 0, 0, 0, 0, 0, 0];
+    const weeklyHappy = [0, 0, 0, 0, 0, 0, 0];
+    const weeklySad = [0, 0, 0, 0, 0, 0, 0];
+    const weeklyAngry = [0, 0, 0, 0, 0, 0, 0];
+    const weeklyFear = [0, 0, 0, 0, 0, 0, 0];
+    const weeklyMixed = [0, 0, 0, 0, 0, 0, 0];
     const weeklyActivityCount = [0, 0, 0, 0, 0, 0, 0];
 
-    childDrawings.forEach((d) => {
-      if (!d.date) return;
-      const drawingDate = new Date(d.date);
+    // 🚨 ADDED : any to bypass TypeScript rulebook
+    childDrawings.forEach((d: any) => {
+      // Handle Date formats perfectly from Neon
+      const rawDate = d.date || d.upload_date || d.created_at || new Date().toISOString();
+      const safeDateStr = typeof rawDate === 'string' ? rawDate.replace(" ", "T") : rawDate;
+      const drawingDate = new Date(safeDateStr);
+      
       let dayIndex = drawingDate.getDay() - 1; 
       if (dayIndex === -1) dayIndex = 6; 
 
       if (dayIndex >= 0 && dayIndex <= 6) {
         weeklyEmotionsCount[dayIndex] += 1;
         weeklyActivityCount[dayIndex] += 1;
-        const emo = d.mainEmotion?.toLowerCase() || "";
-        if (emo.includes("happ")) weeklyHappyCount[dayIndex] += 1;
-        else if (emo.includes("sad")) weeklySadCount[dayIndex] += 1;
-        else if (emo.includes("angr")) weeklyAngryCount[dayIndex] += 1;
-        else weeklyAnxiousCount[dayIndex] += 1;
+        
+        const status = (d?.analysis?.emotional_status || "").toLowerCase();
+        if (status.includes("mix")) weeklyMixed[dayIndex]++;
+        else {
+          if (status.includes("happ") || status.includes("joy") || status.includes("positiv")) weeklyHappy[dayIndex]++;
+          if (status.includes("sad")) weeklySad[dayIndex]++;
+          if (status.includes("ang") || status.includes("frustrat")) weeklyAngry[dayIndex]++;
+          if (status.includes("fear") || status.includes("anxi") || status.includes("scare") || status.includes("worr")) weeklyFear[dayIndex]++;
+        }
       }
     });
 
+    // 🚨 UPGRADED MOOD SCORE MATH
     const finalEmotion = weeklyEmotionsCount.map((total, idx) => {
-      if (total === 0) return 30; 
-      return Math.round((weeklyHappyCount[idx] / total) * 100);
+      if (total === 0) return 50; // Neutral baseline (middle of the chart) for empty days
+
+      // Give weights to emotions to create a dynamic line:
+      const happyScore = weeklyHappy[idx] * 100; // Spikes the line UP
+      const mixedScore = weeklyMixed[idx] * 60;  // Keeps the line slightly above neutral
+      const negativeScore = (weeklySad[idx] + weeklyAngry[idx] + weeklyFear[idx]) * 20; // Dips the line DOWN
+      
+      const totalScore = happyScore + mixedScore + negativeScore;
+      return Math.round(totalScore / total);
     });
 
     const finalActivity = weeklyActivityCount.map((count) => {
@@ -319,23 +345,28 @@ export default function HomeScreen() {
 
     const dominantLabels = weeklyEmotionsCount.map((total, idx) => {
       if (total === 0) return ""; 
-      const h = weeklyHappyCount[idx];
-      const s = weeklySadCount[idx];
-      const a = weeklyAngryCount[idx];
-      const anx = weeklyAnxiousCount[idx];
-
-      const max = Math.max(h, s, a, anx);
-      if (max === h) return "Happy";
-      if (max === s) return "Sad";
-      if (max === a) return "Angry";
-      return "Anxious";
+      const max = Math.max(weeklyHappy[idx], weeklySad[idx], weeklyAngry[idx], weeklyFear[idx], weeklyMixed[idx]);
+      if (max === weeklyHappy[idx]) return "Happy";
+      if (max === weeklySad[idx]) return "Sad";
+      if (max === weeklyAngry[idx]) return "Angry";
+      if (max === weeklyFear[idx]) return "Fear";
+      return "Mixed";
     });
 
     const daysName = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const details = daysName.map((name, idx) => {
       const total = weeklyEmotionsCount[idx];
-      if (total === 0) return `No drawings on ${name}`;
-      return `${total} drawings: ${weeklyHappyCount[idx]} Happy, ${weeklySadCount[idx]} Sad, ${weeklyAngryCount[idx]} Angry, ${weeklyAnxiousCount[idx]} Anxious elements.`;
+      if (total === 0) return `No drawings recorded on ${name}.`;
+      
+      // Filter out emotions with 0 count to keep the text clean
+      let summary = [];
+      if (weeklyHappy[idx] > 0) summary.push(`${weeklyHappy[idx]} Happy`);
+      if (weeklySad[idx] > 0) summary.push(`${weeklySad[idx]} Sad`);
+      if (weeklyAngry[idx] > 0) summary.push(`${weeklyAngry[idx]} Angry`);
+      if (weeklyFear[idx] > 0) summary.push(`${weeklyFear[idx]} Fear`);
+      if (weeklyMixed[idx] > 0) summary.push(`${weeklyMixed[idx]} Mixed`);
+      
+      return `${name}: ${summary.join(", ")}.`;
     });
 
     return { emotionData: finalEmotion, activityData: finalActivity, dayDetails: details, dailyDominantLabels: dominantLabels };
@@ -461,15 +492,20 @@ export default function HomeScreen() {
                 </View>
               </View>
 
+              {/* ... inside chartCard ... */}
               <View style={styles.chartBody}>
+                
+                
+        
                 <SparklineChart 
                   emotionData={emotionData} 
                   activityData={activityData} 
                   dailyDominantLabels={dailyDominantLabels}
                   width={320} 
                   selectedIndex={selectedDayIndex} 
+                  onSelectIndex={setSelectedDayIndex} // 🚨 Added this!
                 />
-                
+
                 <View style={styles.chartDayRow}>
                   {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, index) => (
                     <TouchableOpacity 
@@ -520,29 +556,34 @@ export default function HomeScreen() {
                 <View style={styles.breakdownItem}>
                   <Text style={styles.breakdownEmoji}>😊</Text>
                   <Text style={styles.breakdownLabel}>Happy</Text>
-                  <Text style={[styles.breakdownPct, { color: "#90BE6D" }]}>{emotionBreakdown.happy}%</Text>
+                  <Text style={[styles.breakdownPct, { color: "#16A34A" }]}>{emotionBreakdown.happy}%</Text>
                 </View>
                 <View style={styles.breakdownItem}>
                   <Text style={styles.breakdownEmoji}>😢</Text>
                   <Text style={styles.breakdownLabel}>Sad</Text>
-                  <Text style={[styles.breakdownPct, { color: "#48CAE4" }]}>{emotionBreakdown.sad}%</Text>
+                  <Text style={[styles.breakdownPct, { color: "#3B82F6" }]}>{emotionBreakdown.sad}%</Text>
                 </View>
                 <View style={styles.breakdownItem}>
-                  <Text style={styles.breakdownEmoji}>😠</Text>
+                  <Text style={styles.breakdownEmoji}>😡</Text>
                   <Text style={styles.breakdownLabel}>Angry</Text>
-                  <Text style={[styles.breakdownPct, { color: "#F3722C" }]}>{emotionBreakdown.angry}%</Text>
+                  <Text style={[styles.breakdownPct, { color: "#EF4444" }]}>{emotionBreakdown.angry}%</Text>
                 </View>
                 <View style={styles.breakdownItem}>
                   <Text style={styles.breakdownEmoji}>😨</Text>
-                  <Text style={styles.breakdownLabel}>Anxious</Text>
-                  <Text style={[styles.breakdownPct, { color: "#F8961E" }]}>{emotionBreakdown.anxious}%</Text>
+                  <Text style={styles.breakdownLabel}>Fear</Text>
+                  <Text style={[styles.breakdownPct, { color: "#8B5CF6" }]}>{emotionBreakdown.fear}%</Text>
+                </View>
+                <View style={styles.breakdownItem}>
+                  <Text style={styles.breakdownEmoji}>🌪️</Text>
+                  <Text style={styles.breakdownLabel}>Mixed</Text>
+                  <Text style={[styles.breakdownPct, { color: "#F59E0B" }]}>{emotionBreakdown.mixed}%</Text>
                 </View>
               </View>
             </View>
           </Animated.View>
         )}
 
-        {/* بوكس وصف الحالة والتحذير من الخطر بالخط الأحمر الديناميكي */}
+        {/* Status Box */}
         {selectedChild && progressVisible && (
           <Animated.View style={{ opacity: Animated.multiply(Animated.multiply(fadeInsight, chartFade), progressAnim), marginBottom: 16 }}>
             <View style={[
@@ -553,7 +594,7 @@ export default function HomeScreen() {
                 <Ionicons 
                   name={childStatusEvaluation.isDanger ? "alert-circle" : "checkmark-circle"} 
                   size={18} 
-                  color={childStatusEvaluation.isDanger ? "#E63946" : "#90BE6D"} 
+                  color={childStatusEvaluation.isDanger ? "#E63946" : "#16A34A"} 
                 />
                 <Text style={[
                   styles.statusBoxTitle, 
@@ -572,31 +613,10 @@ export default function HomeScreen() {
           </Animated.View>
         )}
 
-        {/* AI Insight */}
-        {selectedChild && progressVisible && (
-          <Animated.View style={{ opacity: Animated.multiply(Animated.multiply(fadeInsight, chartFade), progressAnim), transform: [{ translateY: fadeInsight.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: progressAnim.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] }}>
-            <View style={styles.insightCard}>
-              <LinearGradient colors={["#F5ECF8", "#FDF8F5"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.insightGradient}>
-                <View style={styles.insightHeader}>
-                  <View style={styles.insightIconWrap}><Ionicons name="sparkles" size={16} color="#A78BFA" /></View>
-                  <Text style={styles.insightHeading}>AI Insight</Text>
-                </View>
-                <Text style={styles.insightText}>
-                  {childStatusEvaluation.isDanger 
-                    ? "AI recommends checking the full clinical breakdowns below due to high distress variance factors detected." 
-                    : "The child's artistic activity tracks well with positive baseline stability. No immediate psychological indicators of conflict found."}
-                </Text>
-                <TouchableOpacity onPress={() => router.push({ pathname: "/child-analysis", params: { childId: String(selectedChild.id) } })}>
-                  <Text style={styles.insightLinkText}>View full analysis</Text>
-                </TouchableOpacity>
-              </LinearGradient>
-            </View>
-          </Animated.View>
-        )}
-
+        
         {/* Recent Drawings */}
         <Animated.View style={{ opacity: fadeActions, transform: [{ translateY: fadeActions.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }}>
-          <Text style={[styles.sectionTitle, { marginBottom: 14 }]}>Recent Drawings</Text>
+          <Text style={[styles.sectionTitle, { marginBottom: 14 }]}>Add New Drawing</Text>
           <View style={styles.actionsCol}>
             <ActionBtn icon="cloud-upload-outline" label="Upload Drawing" sub="Analyze from your camera roll" colors={["#C4A8F5", "#D4B0F0", "#E8B8D8"]} onPress={() => router.push({ pathname: "/choose-child", params: { mode: "upload" } })} />
             <ActionBtn icon="brush-outline" label="Draw" sub="Create a new drawing to analyze" colors={["#F0A8C8", "#E0A0D8", "#C4A8F5"]} onPress={() => router.push({ pathname: "/choose-child", params: { mode: "draw" } })} />
@@ -649,13 +669,40 @@ const styles = StyleSheet.create({
   dayTabActive: { backgroundColor: "rgba(167,139,250,0.15)" },
   chartDay: { fontSize: 10, color: "#C0B0D8", fontFamily: "Inter_500Medium", textAlign: "center" },
   chartDayActive: { color: "#7B5CE5", fontWeight: "700" },
-  tooltipBanner: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#F3EEFF", padding: 8, borderRadius: 12, marginTop: 10, width: "100%" },
-  tooltipText: { fontSize: 11, color: "#5F45B2", fontFamily: "Inter_500Medium", flex: 1 },
+  tooltipBanner: { 
+    position: 'absolute', 
+    top: 40,              
+    alignSelf: 'center',  // 🚨 This is the magic line that stops it from stretching!
+    zIndex: 999,          
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "center",
+    gap: 6, 
+    backgroundColor: "#F3EEFF", 
+    paddingVertical: 10,  // 🚨 Adjusted padding for a cleaner pill shape
+    paddingHorizontal: 16,
+    borderRadius: 24, 
+    borderWidth: 1,
+    borderColor: "#D4C8FF",
+    shadowColor: "#A78BFA",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 10,
+    maxWidth: '90%',      // 🚨 Ensures it doesn't fall off the screen if the text is long
+  },
+  tooltipText: { 
+    fontSize: 12, 
+    color: "#5F45B2", 
+    fontFamily: "Inter_500Medium",
+    textAlign: "center" 
+  },
   chartStats: { flexDirection: "row", marginTop: 14, borderTopWidth: 1, borderTopColor: "#F0ECFF", paddingTop: 14 },
   chartStatChip: { flex: 1, alignItems: "center" },
   chartStatChipMid: { borderLeftWidth: 1, borderRightWidth: 1, borderColor: "#F0ECFF" },
   chartStatNum: { fontSize: 20, fontWeight: "800", color: "#A78BFA", fontFamily: "Inter_700Bold" },
   chartStatLabel: { fontSize: 11, color: "#B0A0CC", fontFamily: "Inter_400Regular", marginTop: 2 },
+  
   breakdownCard: { backgroundColor: "#FFFFFF", borderRadius: 24, padding: 18, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.06, shadowRadius: 14, elevation: 4, borderWidth: 1, borderColor: "#F0EEFF" },
   breakdownTitle: { fontSize: 14, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold", marginBottom: 12 },
   breakdownRow: { flexDirection: "row", justifyContent: "space-between" },
@@ -664,7 +711,6 @@ const styles = StyleSheet.create({
   breakdownLabel: { fontSize: 11, color: "#A090B8", fontFamily: "Inter_400Regular" },
   breakdownPct: { fontSize: 13, fontWeight: "700", fontFamily: "Inter_700Bold", marginTop: 2 },
 
-  /* بوكس وصف الحالة وتحذير الخطر بالخط الأحمر */
   statusContainerBox: { padding: 18, borderRadius: 24, borderWidth: 1.5, elevation: 2 },
   statusBoxSafe: { backgroundColor: "#F4FDF9", borderColor: "rgba(144,190,109,0.25)" },
   statusBoxDanger: { backgroundColor: "#FFF2F2", borderColor: "rgba(230,57,70,0.25)" },

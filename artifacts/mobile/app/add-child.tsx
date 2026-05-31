@@ -60,6 +60,7 @@ export default function AddChildScreen() {
         parentNotes,
         avatarColor: selectedColor,
         initials: name.trim().slice(0, 2).toUpperCase(),
+        icon: ""
       });
 
       router.back();

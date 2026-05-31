@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
   Animated,
   Platform,
@@ -19,12 +19,10 @@ import type { Child } from "@/context/AppContext";
 // ── Child selectable card ─────────────────────────────────────────────────────
 function ChildCard({
   child,
-  selected,
   onPress,
 }: {
   child: Child;
-  selected: boolean;
-  onPress: () => void;
+  onPress: (id: string) => void;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -33,23 +31,28 @@ function ChildCard({
     Animated.sequence([
       Animated.spring(scale, { toValue: 0.95, useNativeDriver: true, speed: 50, bounciness: 2 }),
       Animated.spring(scale, { toValue: 1,    useNativeDriver: true, speed: 40, bounciness: 6 }),
-    ]).start();
-    onPress();
+    ]).start(() => {
+      // Trigger navigation instantly after the animation starts
+      onPress(String(child.id));
+    });
   }
 
   return (
     <Animated.View style={{ transform: [{ scale }] }}>
-      <TouchableOpacity onPress={handlePress} activeOpacity={1}>
-        <View style={[styles.childCard, selected && { borderColor: child.avatarColor, borderWidth: 2 }]}>
+      <TouchableOpacity onPress={handlePress} activeOpacity={0.9}>
+        <View style={styles.childCard}>
           {/* Avatar */}
           <LinearGradient
-            colors={[child.avatarColor + "DD", child.avatarColor]}
+            colors={[(child.avatarColor || "#6C4DFF") + "DD", (child.avatarColor || "#6C4DFF")]}
             style={styles.childAvatar}
-            start={{ x: 0.1, y: 0 }}
-            end={{ x: 0.9, y: 1 }}
           >
             <View style={styles.avatarShine} />
-            <Text style={styles.avatarInitials}>{child.initials}</Text>
+            {/* 🚨 Looks for an icon first, falls back to initials if missing */}
+            {(child as any).icon ? (
+               <Ionicons name={(child as any).icon} size={28} color="#fff" />
+            ) : (
+               <Text style={styles.avatarInitials}>{child.name.slice(0, 2).toUpperCase()}</Text>
+            )}
           </LinearGradient>
 
           {/* Info */}
@@ -58,17 +61,10 @@ function ChildCard({
             <Text style={styles.childMeta}>Age {child.age} · {child.gender}</Text>
           </View>
 
-          {/* Check */}
-          {selected ? (
-            <LinearGradient
-              colors={[child.avatarColor, child.avatarColor + "CC"]}
-              style={styles.checkCircle}
-            >
-              <Ionicons name="checkmark" size={18} color="#fff" />
-            </LinearGradient>
-          ) : (
-            <View style={styles.emptyCheck} />
-          )}
+          {/* Instant Arrow Indicator */}
+          <View style={styles.arrowCircle}>
+            <Ionicons name="chevron-forward" size={18} color="#A090B8" />
+          </View>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -80,7 +76,6 @@ export default function ChooseChildScreen() {
   const insets = useSafeAreaInsets();
   const { children } = useApp();
   const { mode } = useLocalSearchParams<{ mode?: string }>();
-  const [selected, setSelected] = useState<string | null>(null);
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const botPad = Platform.OS === "web" ? 34 : insets.bottom;
 
@@ -93,26 +88,18 @@ export default function ChooseChildScreen() {
     : isEdit
     ? "Select a child to edit their profile and information"
     : "Choose the child who will draw today";
-  const btnLabel = isUpload ? "Continue to Upload" : isEdit ? "Open Profile" : "Continue to Draw";
   const btnIcon  = (isUpload ? "cloud-upload-outline" : isEdit ? "create-outline" : "brush-outline") as any;
 
-  // ── 🚀 توجيه ذكي وحركي يمرر الـ childId الصحيح لشاشة التعديل ──
-  function handleNext() {
-  if (!selected) return;
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-  
-  if (isUpload) {
-    router.push({ pathname: "/add-drawing", params: { childId: selected } });
-  } else if (isEdit) {
-    // 💡 تأكدي أننا نمرر الـ selected هنا وهو يمثل الـ child_id
-    router.push({ 
-      pathname: "/edit-child", 
-      params: { childId: String(selected) } 
-    });
-  } else {
-    router.push({ pathname: "/drawing-canvas", params: { childId: selected } });
+  // ── 🚀 Instant Navigation Logic ──
+  function handleNext(selectedId: string) {
+    if (isUpload) {
+      router.push({ pathname: "/add-drawing", params: { childId: selectedId } });
+    } else if (isEdit) {
+      router.push({ pathname: "/edit-child", params: { childId: selectedId } });
+    } else {
+      router.push({ pathname: "/drawing-canvas", params: { childId: selectedId } });
+    }
   }
-}
 
   return (
     <View style={[styles.container, { paddingTop: topPad }]}>
@@ -141,7 +128,7 @@ export default function ChooseChildScreen() {
 
       {/* Child list */}
       <ScrollView
-        contentContainerStyle={[styles.scroll, { paddingBottom: botPad + 100 }]}
+        contentContainerStyle={[styles.scroll, { paddingBottom: botPad + 40 }]}
         showsVerticalScrollIndicator={false}
       >
         {children.length > 0 ? (
@@ -149,8 +136,7 @@ export default function ChooseChildScreen() {
             <ChildCard
               key={child.id}
               child={child}
-              selected={selected === child.id}
-              onPress={() => setSelected(child.id)}
+              onPress={handleNext}
             />
           ))
         ) : (
@@ -169,33 +155,6 @@ export default function ChooseChildScreen() {
           </View>
         )}
       </ScrollView>
-
-      {/* Footer CTA */}
-      {children.length > 0 && (
-        <View style={[styles.footer, { paddingBottom: botPad + 16 }]}>
-          <TouchableOpacity
-            onPress={handleNext}
-            disabled={!selected}
-            activeOpacity={0.88}
-            style={{ width: "100%" }}
-          >
-            <LinearGradient
-              colors={selected
-                ? isUpload ? ["#C4A8F5", "#D4B0F0", "#F0A8C8"]
-                  : isEdit ? ["#D4B0F0", "#C4A8F5", "#F0A8C8"]
-                  : ["#F0A8C8", "#E0A8F0", "#C4A8F5"]
-                : ["#D8CCE8", "#E8D8F0"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.continueBtn}
-            >
-              <Ionicons name={btnIcon} size={20} color="#fff" />
-              <Text style={styles.continueBtnText}>{btnLabel}</Text>
-              <Ionicons name="arrow-forward" size={18} color="rgba(255,255,255,0.7)" />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }
@@ -210,22 +169,18 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 22, fontWeight: "800", color: "#4A3070", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
   headerSubtitle: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 19, maxWidth: 280 },
   scroll: { paddingHorizontal: 20, gap: 12, paddingTop: 4 },
-  childCard: { flexDirection: "row", alignItems: "center", gap: 16, backgroundColor: "#FFFFFF", borderRadius: 24, padding: 16, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 4, borderWidth: 2, borderColor: "transparent" },
+  childCard: { flexDirection: "row", alignItems: "center", gap: 16, backgroundColor: "#FFFFFF", borderRadius: 24, padding: 16, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 4 },
   childAvatar: { width: 60, height: 60, borderRadius: 30, alignItems: "center", justifyContent: "center", overflow: "hidden", shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.13, shadowRadius: 8, elevation: 5 },
   avatarShine: { position: "absolute", width: 28, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.24)", top: -6, left: -6 },
   avatarInitials: { fontSize: 20, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold" },
   childInfo: { flex: 1, gap: 4 },
   childName: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   childMeta: { fontSize: 12, color: "#A090B8", fontFamily: "Inter_400Regular" },
-  checkCircle: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" },
-  emptyCheck: { width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: "#EAD4F5" },
+  arrowCircle: { width: 36, height: 36, borderRadius: 18, backgroundColor: "#F7F5FA", alignItems: "center", justifyContent: "center" },
   emptyState: { alignItems: "center", paddingTop: 40, gap: 14 },
   emptyIcon: { width: 80, height: 80, borderRadius: 40, alignItems: "center", justifyContent: "center" },
   emptyTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   emptyText: { fontSize: 13, color: "#A090B8", fontFamily: "Inter_400Regular", textAlign: "center" },
   emptyBtn: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 24, paddingVertical: 13, borderRadius: 20 },
   emptyBtnText: { fontSize: 14, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
-  footer: { paddingHorizontal: 20, paddingTop: 12, backgroundColor: "#EDE5FF", borderTopWidth: 1, borderTopColor: "#D8CCFF" },
-  continueBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 17, borderRadius: 28, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 10 },
-  continueBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
 });

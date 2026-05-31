@@ -1,3 +1,4 @@
+import './polyfill.js';
 import {
   Inter_400Regular,
   Inter_500Medium,

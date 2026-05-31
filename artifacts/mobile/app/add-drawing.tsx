@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -17,10 +17,94 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Modal,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "@/context/AppContext";
 
+// ── Analyzing overlay ─────────────────────────────────────────────────────────
+function AnalyzingOverlay({ visible, childName }: { visible: boolean; childName: string }) {
+  const pulse = useRef(new Animated.Value(0.85)).current;
+
+  React.useEffect(() => {
+    if (!visible) return;
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1,    duration: 700, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0.85, duration: 700, useNativeDriver: true }),
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [visible, pulse]);
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={ov.backdrop}>
+        
+        {/* 🚨 MATCHING THE WELCOME BANNER GRADIENT */}
+        <LinearGradient 
+          colors={["#C4A8F5", "#F0A8C8"]} 
+          start={{ x: 0, y: 0 }} 
+          end={{ x: 1, y: 0 }} 
+          style={ov.card}
+        >
+          <Animated.View style={[ov.iconWrap, { transform: [{ scale: pulse }] }]}>
+            <Ionicons name="sparkles" size={40} color="#FFFFFF" />
+          </Animated.View>
+
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+            <Image 
+              source={require("@/assets/images/whale-magnifier.png")} 
+              style={{ width: 130, height: 130 }} 
+              resizeMode="contain" 
+            />
+            <Text style={ov.title}>Analyzing...</Text>
+          </View>
+
+          <View style={ov.dotsRow}>
+            {[0, 1, 2].map((i) => (
+              <ProgressDot key={i} delay={i * 220} />
+            ))}
+          </View>
+          <Text style={ov.hint}>This takes just a moment</Text>
+        </LinearGradient>
+        
+      </View>
+    </Modal>
+  );
+}
+
+function ProgressDot({ delay }: { delay: number }) {
+  const op = useRef(new Animated.Value(0.3)).current;
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.delay(delay),
+        Animated.timing(op, { toValue: 1,   duration: 400, useNativeDriver: true }),
+        Animated.timing(op, { toValue: 0.3, duration: 400, useNativeDriver: true }),
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [delay, op]);
+  return <Animated.View style={[ov.dot, { opacity: op }]} />;
+}
+
+const ov = StyleSheet.create({
+  backdrop:  { flex: 1, backgroundColor: "rgba(255, 255, 255, 0.75)", alignItems: "center", justifyContent: "center", padding: 32 },
+  
+  // 🚨 REMOVED backgroundColor SO THE GRADIENT SHOWS THROUGH
+  card:      { borderRadius: 32, paddingVertical: 44, paddingHorizontal: 36, alignItems: "center", gap: 16, width: "100%", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.3, shadowRadius: 30, elevation: 15 },
+  
+  iconWrap:  { width: 84, height: 84, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", marginBottom: 4 },
+  title:     { fontSize: 24, fontWeight: "800", color: "#FFFFFF", fontFamily: "Inter_700Bold", letterSpacing: -0.4 }, 
+  dotsRow:   { flexDirection: "row", gap: 8, marginTop: 4 },
+  dot:       { width: 10, height: 10, borderRadius: 5, backgroundColor: "#FFFFFF" }, 
+  hint:      { fontSize: 12, color: "rgba(255, 255, 255, 0.8)", fontFamily: "Inter_400Regular" }, 
+});
+
+// ── Main Screen ──
 export default function AddDrawingScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
@@ -33,12 +117,12 @@ export default function AddDrawingScreen() {
 
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [description, setDescription] = useState("");
+  const [childNote, setChildNote] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
-
+  
   // Animations
   const imageScale = useRef(new Animated.Value(0.85)).current;
   const imageOpacity = useRef(new Animated.Value(0)).current;
-  const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   async function pickFromGallery() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -51,9 +135,7 @@ export default function AddDrawingScreen() {
     });
     if (!result.canceled && result.assets[0]) {
       setImageUri(result.assets[0].uri);
-      if (Platform.OS !== "web") {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-      }
+      if (Platform.OS !== "web") await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
       Animated.parallel([
         Animated.spring(imageScale, { toValue: 1, useNativeDriver: true, speed: 16, bounciness: 8 }),
         Animated.timing(imageOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
@@ -71,9 +153,7 @@ export default function AddDrawingScreen() {
     });
     if (!result.canceled && result.assets[0]) {
       setImageUri(result.assets[0].uri);
-      if (Platform.OS !== "web") {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-      }
+      if (Platform.OS !== "web") await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
       Animated.parallel([
         Animated.spring(imageScale, { toValue: 1, useNativeDriver: true, speed: 16, bounciness: 8 }),
         Animated.timing(imageOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
@@ -81,83 +161,57 @@ export default function AddDrawingScreen() {
     }
   }
 
-  // ── 🚀 دالة الرفع والتحليل المحدثة بالـ FormData الحقيقي ──
-  // ── 🚀 دالة الرفع والتحليل المحدثة المتوافقة مع الويب والموبايل ──
   async function handleAnalyze() {
     if (!imageUri || !childId) return;
     setAnalyzing(true);
-
-    if (Platform.OS !== "web") {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-    }
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(shimmerAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
-        Animated.timing(shimmerAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
-      ])
-    ).start();
+    if (Platform.OS !== "web") await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
 
     try {
       const formData = new FormData();
       formData.append("child_id", childId.toString());
       formData.append("parent_explanation", description.trim() || "No context provided by parent.");
-
-      // ── 🌐 ذكاء معالجة الصورة للويب والموبايل معاً لمنع الـ 400 ──
+      formData.append("child_description", childNote.trim() || "No context provided by child.");
+      
       if (Platform.OS === "web") {
-        // في الويب نقوم بتحويل الـ URI إلى Blob حقيقي ليفهمه السيرفر فوراً كملف
         const responseBlob = await fetch(imageUri);
         const blob = await responseBlob.blob();
         const filename = imageUri.split("/").pop() || "drawing.jpg";
         formData.append("file", blob, filename);
       } else {
-        // في الموبايل والـ Emulator نستخدم الهيكل التقليدي
         const filename = imageUri.split("/").pop() || "drawing.jpg";
         const match = /\.(\w+)$/.exec(filename);
         const type = match ? `image/${match[1]}` : `image/jpeg`;
-
-        formData.append("file", {
-          uri: imageUri,
-          name: filename,
-          type: type,
-        } as any);
+        formData.append("file", { uri: imageUri, name: filename, type: type } as any);
       }
 
-      // إرسال الطلب للسيرفر
-      const response = await fetch("http://localhost:5000/drawings", {
-        method: "POST",
-        body: formData,
-        // ⚠️ ملاحظة: في الـ FormData للويب، يجب ألا نضع حقل Content-Type يدوياً، المتصفح سيضعه تلقائياً مع الـ boundary الصحيح
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); 
+
+      const response = await fetch("http://127.0.0.1:8000/drawings", {
+          method: "POST",
+          body: formData,
+          signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       const data = await response.json();
-
       setAnalyzing(false);
-      shimmerAnim.stopAnimation();
 
       if (response.ok && (data.success || data.drawing_id)) {
-        console.log("Drawing uploaded and populated successfully!");
-        
-        if (appContext?.fetchDrawings) {
-          await appContext.fetchDrawings(childId);
-        }
-
-        // الانتقال لصفحة النتيجة الفخمة الملونة
+        if (appContext?.fetchDrawings) await appContext.fetchDrawings(childId);
         router.replace({
           pathname: "/analysis-result",
-          params: { drawingId: String(data.drawing_id) },
+          params: { drawingId: String(data.drawing_id), childId: String(childId), freshImage: data.image_path, freshAnalysis: JSON.stringify(data.analysis)}
         });
       } else {
-        console.error("Server error detail:", data);
         alert(`Analysis failed: ${data.detail || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Error connecting to FastAPI during analysis:", error);
       setAnalyzing(false);
-      shimmerAnim.stopAnimation();
       alert("Connection error while connecting to server.");
     }
   }
+
   if (!child) {
     return (
       <View style={[styles.container, { paddingTop: topPad }]}>
@@ -169,13 +223,11 @@ export default function AddDrawingScreen() {
     );
   }
 
-  const canAnalyze = !!imageUri && !analyzing;
+  // 🚨 NEW: Requires image AND both descriptions!
+  const canAnalyze = !!imageUri && description.trim().length > 0 && childNote.trim().length > 0 && !analyzing;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <View style={{ paddingTop: topPad }}>
         <View style={styles.navBar}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
@@ -186,23 +238,7 @@ export default function AddDrawingScreen() {
         </View>
       </View>
 
-      <ScrollView
-        contentContainerStyle={[styles.scroll, { paddingBottom: botPad + 40 }]}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Child chip */}
-        <View style={styles.childChip}>
-          <LinearGradient
-            colors={[child.avatarColor + "DD", child.avatarColor]}
-            style={styles.childChipAvatar}
-          >
-            <Text style={child.avatarColor ? styles.childChipInitials : { color: '#6C4DFF' }}>{child.initials || "CH"}</Text>
-          </LinearGradient>
-          <Text style={styles.childChipName}>Drawing for <Text style={{ color: child.avatarColor || "#6C4DFF", fontFamily: "Inter_700Bold" }}>{child.name}</Text></Text>
-        </View>
-
-        {/* Image section */}
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: botPad + 40 }]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Text style={styles.sectionLabel}>Drawing Image</Text>
 
         {imageUri ? (
@@ -227,7 +263,6 @@ export default function AddDrawingScreen() {
           </View>
         )}
 
-        {/* Upload buttons */}
         <View style={styles.uploadBtnsRow}>
           <TouchableOpacity onPress={pickFromGallery} activeOpacity={0.85} style={{ flex: 1 }}>
             <LinearGradient colors={["#C4A8F5", "#D4B0F0"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.uploadBtn}>
@@ -243,11 +278,7 @@ export default function AddDrawingScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Description */}
-        <Text style={[styles.sectionLabel, { marginTop: 4 }]}>Parent Description</Text>
-        <Text style={styles.descriptionHint}>
-          Describe the situation, context, or any observations about this drawing. The AI will use this to provide better insights.
-        </Text>
+        <Text style={[styles.sectionLabel, { marginTop: 4 }]}>User Description</Text>
         <View style={[styles.descriptionBox, description.length > 0 && styles.descriptionBoxFocused]}>
           <TextInput
             style={styles.descriptionInput}
@@ -255,45 +286,26 @@ export default function AddDrawingScreen() {
             placeholderTextColor="#B0A0CC"
             value={description}
             onChangeText={setDescription}
-            multiline
-            numberOfLines={5}
-            textAlignVertical="top"
-            maxLength={500}
+            multiline numberOfLines={5} textAlignVertical="top" maxLength={500}
           />
           <Text style={styles.charCount}>{description.length}/500</Text>
         </View>
 
-        {/* Analyze button */}
-        {analyzing ? (
-          <View style={styles.analyzingCard}>
-            <Animated.View style={[styles.analyzingDot, { opacity: shimmerAnim }]}>
-              <Ionicons name="sparkles" size={18} color="#A78BFA" />
-            </Animated.View>
-            <View>
-              <Text style={styles.analyzingTitle}>AI is analyzing the drawing…</Text>
-              <Text style={styles.analyzingSubtitle}>Looking for emotional patterns and insights</Text>
-            </View>
-            <ActivityIndicator size="small" color="#A78BFA" />
-          </View>
-        ) : (
-          <TouchableOpacity onPress={handleAnalyze} disabled={!canAnalyze} activeOpacity={0.88}>
-            <LinearGradient
-              colors={canAnalyze ? ["#C4A8F5", "#D4B0F0", "#F0A8C8"] : ["#C0B0D8", "#D0C0E8"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.analyzeBtn}
-            >
-              <Ionicons name="sparkles" size={20} color="#fff" />
-              <Text style={styles.analyzeBtnText}>
-                {imageUri ? "Analyze Drawing" : "Add an image to continue"}
-              </Text>
-              {imageUri && <Ionicons name="arrow-forward" size={18} color="rgba(255,255,255,0.7)" />}
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
+        <Text style={[styles.sectionLabel, { marginTop: 4 }]}>Child Description</Text>
+        <View style={[styles.descriptionBox, childNote.length > 0 && styles.descriptionBoxFocused]}>
+          <TextInput
+            style={styles.descriptionInput}
+            placeholder={"What did the child say about their drawing? Enter their own words here."}
+            placeholderTextColor="#B0A0CC"
+            value={childNote}
+            onChangeText={setChildNote}
+            multiline numberOfLines={4} textAlignVertical="top" maxLength={300}
+          />
+          <Text style={styles.charCount}>{childNote.length}/300</Text>
+        </View>
 
-        {/* Tips */}
-        <View style={styles.tipsCard}>
+        {/* Tips Section (Moved Above Button!) */}
+        <View style={[styles.tipsCard, { marginBottom: 24 }]}>
           <Text style={styles.tipsTitle}>Tips for better analysis</Text>
           {[
             "Use clear, well-lit photos of the drawing",
@@ -306,7 +318,29 @@ export default function AddDrawingScreen() {
             </View>
           ))}
         </View>
+
+        {/* 🚨 Smart Button at the very bottom! */}
+        <TouchableOpacity onPress={handleAnalyze} disabled={!canAnalyze} activeOpacity={0.88}>
+          <LinearGradient
+            colors={canAnalyze ? ["#C4A8F5", "#D4B0F0", "#F0A8C8"] : ["#C0B0D8", "#D0C0E8"]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            style={styles.analyzeBtn}
+          >
+            <Ionicons name="sparkles" size={20} color="#fff" />
+            <Text style={styles.analyzeBtnText}>
+              {!imageUri 
+                ? "Add an image to continue" 
+                : (!description.trim() || !childNote.trim()) 
+                  ? "Fill descriptions to continue" 
+                  : "Analyze Drawing"}
+            </Text>
+            {canAnalyze && <Ionicons name="arrow-forward" size={18} color="rgba(255,255,255,0.7)" />}
+          </LinearGradient>
+        </TouchableOpacity>
       </ScrollView>
+
+      {/* 🚨 The Full-Screen Modal Overlay! */}
+      <AnalyzingOverlay visible={analyzing} childName={child?.name ?? "child"} />
     </KeyboardAvoidingView>
   );
 }
@@ -318,10 +352,6 @@ const styles = StyleSheet.create({
   backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
   navTitle: { fontSize: 18, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
   scroll: { paddingHorizontal: 20, paddingTop: 8 },
-  childChip: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "#FFFFFF", borderRadius: 20, paddingVertical: 10, paddingHorizontal: 14, alignSelf: "flex-start", marginBottom: 22, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3 },
-  childChipAvatar: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center" },
-  childChipInitials: { fontSize: 13, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold" },
-  childChipName: { fontSize: 13, color: "#5A4A7A", fontFamily: "Inter_500Medium" },
   sectionLabel: { fontSize: 15, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold", marginBottom: 12, letterSpacing: -0.2 },
   imagePreviewWrap: { borderRadius: 24, overflow: "hidden", marginBottom: 14, height: 220, backgroundColor: "#F0E8FF" },
   imagePreview: { width: "100%", height: "100%" },
@@ -336,17 +366,12 @@ const styles = StyleSheet.create({
   uploadBtnsRow: { flexDirection: "row", gap: 12, marginBottom: 24 },
   uploadBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, paddingVertical: 14, borderRadius: 18, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.22, shadowRadius: 12, elevation: 7 },
   uploadBtnText: { fontSize: 14, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
-  descriptionHint: { fontSize: 12, color: "#A090B8", fontFamily: "Inter_400Regular", marginBottom: 10, lineHeight: 18 },
   descriptionBox: { backgroundColor: "#FFFFFF", borderRadius: 20, padding: 16, marginBottom: 20, borderWidth: 1.5, borderColor: "#EAD4F5", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2, minHeight: 130 },
   descriptionBoxFocused: { borderColor: "#A78BFA" },
   descriptionInput: { fontSize: 14, color: "#4A3070", fontFamily: "Inter_400Regular", lineHeight: 22, flex: 1, minHeight: 100 },
   charCount: { fontSize: 10, color: "#C0B0D8", fontFamily: "Inter_400Regular", textAlign: "right", marginTop: 8 },
   analyzeBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 18, borderRadius: 28, marginBottom: 20, shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 18, elevation: 10 },
   analyzeBtnText: { fontSize: 16, fontWeight: "700", color: "#fff", fontFamily: "Inter_700Bold" },
-  analyzingCard: { flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: "#FFFFFF", borderRadius: 20, padding: 16, marginBottom: 20, borderWidth: 1.5, borderColor: "#EAD4F5" },
-  analyzingDot: { width: 36, height: 36, borderRadius: 12, backgroundColor: "#F0E8FF", alignItems: "center", justifyContent: "center" },
-  analyzingTitle: { fontSize: 14, fontWeight: "700", color: "#4A3070", fontFamily: "Inter_700Bold" },
-  analyzingSubtitle: { fontSize: 12, color: "#A090B8", fontFamily: "Inter_400Regular", marginTop: 2 },
   tipsCard: { backgroundColor: "#FFFFFF", borderRadius: 20, padding: 16, gap: 10, borderWidth: 1, borderColor: "#F0E8FF" },
   tipsTitle: { fontSize: 13, fontWeight: "700", color: "#4A3880", fontFamily: "Inter_700Bold", marginBottom: 4 },
   tipRow: { flexDirection: "row", alignItems: "flex-start", gap: 9 },

@@ -71,15 +71,7 @@ export default function WelcomeScreen() {
             label="Get Started"
             onPress={() => router.push("/login")}
             size="lg"
-            // تم تعديل الـ style لضمان ظهور التأثير الزجاجي (Glassmorphism)
-            style={[
-              styles.btn, 
-              { 
-                backgroundColor: 'rgba(255, 255, 255, 0.3)', 
-                borderWidth: 1.5, 
-                borderColor: 'rgba(255, 255, 255, 0.6)' 
-              }
-            ]}
+            style={styles.btn}
           />
         </View>
       </Animated.View>

@@ -3,22 +3,29 @@
     "name": "Draw Mind AI",
     "slug": "mobile",
     "version": "1.0.0",
+    "jsEngine": "jsc",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/whale-paintbrush.png",
     "scheme": "mobile",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./assets/images/whale-paintbrush.png",
       "resizeMode": "contain",
       "backgroundColor": "#F5F1FF"
     },
     "ios": {
       "supportsTablet": false
     },
-    "android": {},
+    "android": {
+  "adaptiveIcon": {
+    "foregroundImage": "./assets/images/whale-paintbrush.png",  
+    "backgroundColor": "#ffffff"
+  },
+  "package": "com.raghad.drawmind"
+},
     "web": {
-      "favicon": "./assets/images/icon.png"
+      "favicon": "./assets/images/whale-paintbrush.png"
     },
     "plugins": [
       [
@@ -33,6 +40,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d5d9138c-8fc1-4b84-8898-f54975c89914"
+      }
     }
   }
 }

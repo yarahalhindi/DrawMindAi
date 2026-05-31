@@ -55,8 +55,8 @@ function GoogleSignInButton({ disabled, onStart, onSuccess, onError, onCancel }:
 
   const [, response, promptAsync] = Google.useAuthRequest({
     webClientId: configuredId || "not-configured",
+    iosClientId: "test-id-for-now", // 👈 This dummy ID stops the iOS crash!
   });
-
   useEffect(() => {
     if (!response) return;
     if (response.type === "success") {

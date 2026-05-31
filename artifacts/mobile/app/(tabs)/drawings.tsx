@@ -92,11 +92,6 @@ function ChildRow({
                 <Ionicons name="brush-outline" size={11} color="#A090B8" />
                 <Text style={styles.drawingCountText}>{drawingCount} drawing{drawingCount !== 1 ? "s" : ""}</Text>
               </View>
-              {drawingCount > 0 && (
-                <View style={[styles.emotionBadge, { backgroundColor: emotionColor + "18" }]}>
-                  <Text style={[styles.emotionBadgeText, { color: emotionColor }]}>{emotionSummary}</Text>
-                </View>
-              )}
             </View>
           </View>
 

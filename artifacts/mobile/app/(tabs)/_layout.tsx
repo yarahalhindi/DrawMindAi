@@ -1,3 +1,4 @@
+
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { SymbolView } from "expo-symbols";
@@ -5,7 +6,7 @@ import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "@/context/AppContext";
-
+import { GlobalAIChat } from "@/components/GlobalAIChat";
 function TabIcon({
   ionName,
   sfName,
@@ -18,7 +19,7 @@ function TabIcon({
   size: number;
 }) {
   if (Platform.OS === "ios") {
-    return <SymbolView name={sfName} tintColor={color} size={size} />;
+    return <SymbolView name={sfName as any} tintColor={color} size={size} />
   }
   return <Ionicons name={ionName as any} size={size} color={color} />;
 }
@@ -35,6 +36,7 @@ export default function TabLayout() {
   const tabBarHeight = isWeb ? 84 : 62 + insets.bottom;
 
   return (
+    <>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -56,7 +58,6 @@ export default function TabLayout() {
         tabBarBackground: () => (
           <View style={[StyleSheet.absoluteFill, { backgroundColor: "#EDE5FF" }]} />
         ),
-        tabBarBackgroundBlendMode: "normal",
         tabBarLabelStyle: {
           fontSize: 11,
           fontFamily: "Inter_600SemiBold",
@@ -93,9 +94,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: "Chat",
+          title: "Specialists",
           tabBarIcon: ({ color, size }) => (
-            <TabIcon ionName="chatbubbles" sfName="bubble.left.and.bubble.right.fill" color={color} size={size} />
+            <TabIcon ionName="heart-half-outline" sfName="bubble.left.and.bubble.right.fill" color={color} size={size} />
           ),
         }}
       />
@@ -109,6 +110,9 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    {/* 🚨 This makes the chat button hover over ALL tabs! */}
+    <GlobalAIChat /> 
+  </>
   );
 }
 

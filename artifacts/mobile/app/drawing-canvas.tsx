@@ -13,6 +13,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  Image,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -59,14 +60,27 @@ function AnalyzingOverlay({ visible, childName }: { visible: boolean; childName:
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={ov.backdrop}>
-        <LinearGradient colors={["#C4A8F5", "#D4B0F0"]} style={ov.card}>
+        
+        {/* 🚨 MATCHING THE WELCOME BANNER GRADIENT */}
+        <LinearGradient 
+          colors={["#C4A8F5", "#F0A8C8"]} 
+          start={{ x: 0, y: 0 }} 
+          end={{ x: 1, y: 0 }} 
+          style={ov.card}
+        >
           <Animated.View style={[ov.iconWrap, { transform: [{ scale: pulse }] }]}>
-            <Ionicons name="sparkles" size={40} color="#fff" />
+            <Ionicons name="sparkles" size={40} color="#FFFFFF" />
           </Animated.View>
-          <Text style={ov.title}>Analyzing Drawing…</Text>
-          <Text style={ov.sub}>
-            Reading emotional patterns{"\n"}in {childName}'s artwork
-          </Text>
+
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+            <Image 
+              source={require("@/assets/images/whale-magnifier.png")} 
+              style={{ width: 130, height: 130 }} 
+              resizeMode="contain" 
+            />
+            <Text style={ov.title}>Analyzing...</Text>
+          </View>
+
           <View style={ov.dotsRow}>
             {[0, 1, 2].map((i) => (
               <ProgressDot key={i} delay={i * 220} />
@@ -74,11 +88,11 @@ function AnalyzingOverlay({ visible, childName }: { visible: boolean; childName:
           </View>
           <Text style={ov.hint}>This takes just a moment</Text>
         </LinearGradient>
+        
       </View>
     </Modal>
   );
 }
-
 function ProgressDot({ delay }: { delay: number }) {
   const op = useRef(new Animated.Value(0.3)).current;
   React.useEffect(() => {
@@ -96,14 +110,16 @@ function ProgressDot({ delay }: { delay: number }) {
 }
 
 const ov = StyleSheet.create({
-  backdrop:  { flex: 1, backgroundColor: "rgba(15,8,38,0.75)", alignItems: "center", justifyContent: "center", padding: 32 },
-  card:      { borderRadius: 32, paddingVertical: 44, paddingHorizontal: 36, alignItems: "center", gap: 16, width: "100%", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.6, shadowRadius: 40, elevation: 20 },
-  iconWrap:  { width: 84, height: 84, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 4 },
-  title:     { fontSize: 22, fontWeight: "800", color: "#fff", fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
-  sub:       { fontSize: 14, color: "rgba(255,255,255,0.75)", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 22 },
+  backdrop:  { flex: 1, backgroundColor: "rgba(255, 255, 255, 0.75)", alignItems: "center", justifyContent: "center", padding: 32 },
+  
+  // 🚨 REMOVED backgroundColor SO THE GRADIENT SHOWS THROUGH
+  card:      { borderRadius: 32, paddingVertical: 44, paddingHorizontal: 36, alignItems: "center", gap: 16, width: "100%", shadowColor: "#C4A8F5", shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.3, shadowRadius: 30, elevation: 15 },
+  
+  iconWrap:  { width: 84, height: 84, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", marginBottom: 4 },
+  title:     { fontSize: 24, fontWeight: "800", color: "#FFFFFF", fontFamily: "Inter_700Bold", letterSpacing: -0.4 }, 
   dotsRow:   { flexDirection: "row", gap: 8, marginTop: 4 },
-  dot:       { width: 10, height: 10, borderRadius: 5, backgroundColor: "#fff" },
-  hint:      { fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter_400Regular" },
+  dot:       { width: 10, height: 10, borderRadius: 5, backgroundColor: "#FFFFFF" }, 
+  hint:      { fontSize: 12, color: "rgba(255, 255, 255, 0.8)", fontFamily: "Inter_400Regular" }, 
 });
 
 // ── Main screen ───────────────────────────────────────────────────────────────
@@ -135,9 +151,11 @@ export default function DrawingCanvas() {
   const [description, setDescription] = useState("");
   const [descFocused, setDescFocused] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-
+  const [childNote, setChildNote] = useState("");
   const analyzeBtnScale = useRef(new Animated.Value(0)).current;
   const hasPaths = paths.length > 0;
+  // 🚨 NEW: Requires drawing AND both descriptions!
+  const canAnalyze = hasPaths && description.trim().length > 0 && childNote.trim().length > 0 && !isAnalyzing;
 
   React.useEffect(() => {
     Animated.spring(analyzeBtnScale, {
@@ -187,6 +205,7 @@ export default function DrawingCanvas() {
       const formData = new FormData();
       formData.append("child_id", childId?.toString() || "");
       formData.append("parent_explanation", description.trim() || "No context provided by parent.");
+      formData.append("child_description", childNote.trim() || "No context provided by child.");
 
       // 2. معالجة الـ URI وتحويله إلى ملف باينري يقرأه السيرفر
       if (imageUri) {
@@ -197,7 +216,7 @@ export default function DrawingCanvas() {
       }
 
       // 3. إرسال الطلب الفوري المباشر لسيرفر FastAPI لتعبئة جداول Neon
-      const response = await fetch("http://localhost:5000/drawings", {
+      const response = await fetch("http://127.0.0.1:8000/drawings", {
         method: "POST",
         body: formData,
       });
@@ -207,16 +226,24 @@ export default function DrawingCanvas() {
       setIsAnalyzing(false);
 
       if (response.ok && (data.success || data.drawing_id)) {
-        console.log("Canvas drawing analyzed and populated successfully!");
+        console.log("Canvas drawing analyzed! Backend response:", data);
         
-        if (appContext?.fetchDrawings && childId) {
-          await appContext.fetchDrawings(childId);
+        if (appContext?.fetchDrawings) {
+          appContext.fetchDrawings(childId);
         }
+
+        // Prevent the double-string bug
+        const analysisString = typeof data.analysis === 'string' 
+          ? data.analysis 
+          : JSON.stringify(data.analysis);
 
         // الانتقال لصفحة النتيجة الملونة الفخمة مع تمرير المعرّف الجديد الحقيقي
         router.replace({
           pathname: "/analysis-result",
-          params: { drawingId: String(data.drawing_id) },
+          params: { drawingId: String(data.drawing_id),
+            childId: String(childId),
+            freshImage: data.image_path,
+            freshAnalysis: analysisString},
         });
       } else {
         alert("Analysis failed. Please try drawing again.");
@@ -310,7 +337,7 @@ export default function DrawingCanvas() {
       <View style={styles.descSection}>
         <View style={styles.descLabelRow}>
           <Ionicons name="create-outline" size={14} color="#A090B8" />
-          <Text style={styles.descLabel}>Parent Notes</Text>
+          <Text style={styles.descLabel}>User Description</Text>
         </View>
         <View style={[styles.descBox, descFocused && styles.descBoxFocused]}>
           <TextInput
@@ -330,7 +357,25 @@ export default function DrawingCanvas() {
             <Text style={styles.charCount}>{description.length}/500</Text>
           )}
         </View>
+      {/* --- NEW CHILD NOTE SECTION --- */}
+      <View style={[styles.descLabelRow, { marginTop: 15 }]}>
+        <Ionicons name="happy-outline" size={14} color="#A090B8" />
+        <Text style={styles.descLabel}>Child Description</Text>
       </View>
+      <View style={[styles.descBox, descFocused && styles.descBoxFocused]}>
+        <TextInput
+          style={styles.descInput}
+          placeholder="Enter the child's own words..."
+          placeholderTextColor="#C0B0D8"
+          value={childNote}
+          onChangeText={setChildNote}
+          multiline
+          numberOfLines={2}
+          textAlignVertical="top"
+          maxLength={300}
+        />
+      </View>
+    </View>
 
       {/* Action Button */}
       <Animated.View
@@ -339,15 +384,20 @@ export default function DrawingCanvas() {
           { paddingBottom: botPad + 10, transform: [{ scale: analyzeBtnScale }] },
         ]}
       >
-        <TouchableOpacity onPress={handleAnalyze} disabled={!hasPaths} activeOpacity={0.88} style={{ width: "100%" }}>
+        <TouchableOpacity onPress={handleAnalyze} disabled={!canAnalyze} activeOpacity={0.88} style={{ width: "100%" }}>
           <LinearGradient
-            colors={hasPaths ? ["#C4A8F5", "#D4B0F0", "#F0A8C8"] : ["#C0B0D8", "#D0C0E8"]}
+            colors={canAnalyze ? ["#C4A8F5", "#D4B0F0", "#F0A8C8"] : ["#C0B0D8", "#D0C0E8"]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.analyzeBtn}
           >
             <Ionicons name="sparkles" size={20} color="#fff" />
-            <Text style={styles.analyzeBtnText}>Analyze Child</Text>
-            <Ionicons name="arrow-forward" size={18} color="rgba(255,255,255,0.7)" />
+            
+            {/* 🚨 Smart Text: Tells the user what is missing! */}
+            <Text style={styles.analyzeBtnText}>
+              {(!description.trim() || !childNote.trim()) ? "Fill descriptions" : "Analyze Child"}
+            </Text>
+            
+            {canAnalyze && <Ionicons name="arrow-forward" size={18} color="rgba(255,255,255,0.7)" />}
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>

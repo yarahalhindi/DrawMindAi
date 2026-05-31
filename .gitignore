@@ -47,3 +47,13 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Expo / React Native
+node_modules/
+.expo/
+dist/
